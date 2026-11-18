@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6de58391b7ab04d9b9b9a183549f13a5, type: 3}
+  m_Name: PlaceableCatalog
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Building.PlaceableCatalog
+  definitions:
+  - {fileID: 11400000, guid: 52bc07745bf3e4ba2871c7cc698bdec9, type: 2}
+  - {fileID: 11400000, guid: d78f3dbfa8e4e49f6b7ff6bb89e56f03, type: 2}
+  - {fileID: 11400000, guid: e465553b05a6041bd89e4e2de6cbf869, type: 2}

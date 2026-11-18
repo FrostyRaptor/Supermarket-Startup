@@ -1,0 +1,100 @@
+# Build System
+
+Runtime grid-based object placement for the supermarket. This is the "objects only" variant:
+`ShopCell` is the floor, and the player places furniture/decor on a 16 x 16 grid of 1 m cells.
+
+## Controls
+
+| Input | Action |
+|---|---|
+| `B` | toggle build mode |
+| `1`-`9` or hotbar click | select a placeable |
+| Mouse move | hover + ghost preview |
+| LMB | place (valid only) |
+| RMB | remove hovered object |
+| `R` | rotate 90 degrees |
+| `Esc` | clear selection, or leave build mode |
+
+## Scene setup
+
+Run `Tools > Supermarket > Build System > Setup Scene`. This creates the materials,
+placeholder prefabs, definitions and catalog, then wires a `BuildSystem` object into
+`Assets/_Scenes/__Scene_0.unity`. It is safe to rerun; existing assets are left alone.
+
+The grid is fitted to the `ShopCell` collider bounds (16 x 16 cells, 1 m each) with
+the surface at the top of the cell (y = 0.75). Without a `ShopCell`, it falls back to
+origin `(-8, 0.75, -8)`.
+
+## Adding a placeable
+
+1. Create a prefab in `Assets/_Prefabs/Placeables/`.
+2. Put the pivot at the **center of the footprint, on the bottom face**, with +Z forward.
+3. Add a `PlacedObject` component to the root (the grid adds one if missing).
+4. Use one collider on the root; child visual meshes do not need colliders.
+5. Create a `PlaceableDefinition` (`Create > Supermarket > Building > Placeable Definition`):
+   - `id` is used by save files and must stay stable.
+   - `footprint` is (cells along X, cells along Z).
+   - `cost` is charged through `SimpleWallet` if assigned.
+6. Add the definition to `Assets/_ScriptableObjects/Building/PlaceableCatalog.asset`.
+
+The hotbar is generated from the catalog at runtime, so no UI wiring is required.
+
+## Grid conventions
+
+- `GridCoord { X, Z }`, `(0,0)` is the plot's minimum corner.
+- A footprint is anchored at its minimum corner; a 2x1 at `(4,4)` occupies `(4,4)` and `(5,4)`.
+- Rotation is clockwise viewed from above and matches `Quaternion.Euler(0, turns * 90, 0)`.
+- Hovering uses a math plane at the floor height, not a physics raycast; the cursor works
+  above placed objects and the `ShopCell` collider never blocks it.
+- Footprint matches the occupied cells after rotation; see `FootprintUtility`.
+
+## Persistence
+
+`BuildLayoutStore` saves the layout JSON through `PlayerPrefs`, under the key
+`supermarket.build-layout.<fileName>` (default `supermarket.build-layout.build-layout.json`):
+
+```json
+{
+  "version": 1,
+  "objects": [
+    { "id": "shelf_2x1", "x": 3, "z": 4, "rotation": 1 }
+  ]
+}
+```
+
+The layout is saved immediately after every placement/removal and flushed on
+pause, focus loss, and quit. `PlayerPrefs` is WebGL-safe and avoids blocking
+`System.IO`. Corrupt payloads are quarantined under a `.corrupt` key and ignored;
+unknown definition IDs are skipped with a warning. Unsupported `version` values
+are rejected and the plot starts empty.
+
+Use `Tools > Supermarket > Build System > Clear Saved Layout` to reset the
+configured store's key. If the store has objects placed, `BuildGrid.size` cannot
+change at runtime (the grid keeps the old size and logs a warning).
+
+## Extending
+
+- **Economy:** implement `IBuildEconomy` and assign it to `BuildController.economySource`.
+  `SimpleWallet` is the placeholder implementation.
+- **Gameplay:** subscribe to `BuildGrid.ObjectPlaced` / `ObjectRemoved`, and query
+  `BuildGrid.GetOccupant` or `IsInside` for pathfinding and customer logic.
+- **Floor tiles:** add a separate floor layer/array to `BuildGrid`; the object occupancy
+  model does not need to change.
+
+## Tests
+
+EditMode tests live in `Assets/Tests/EditMode/` and cover coordinate conversion, footprint
+rotation, occupancy/overlap, bounds rejection, removal, pivot rotation, persistence
+(round-trip, corrupt data, version mismatch, unknown IDs), economy ordering, and hotbar
+index mapping. Run them from `Window > General > Test Runner > EditMode`.
+
+## Layout
+
+```
+Assets/__Scripts/Building/Core/          GridCoord, FootprintUtility, PlaceableDefinition, PlaceableCatalog, PlacedObject
+Assets/__Scripts/Building/Runtime/       BuildGrid, BuildController, BuildInput, PlacementResult, PlacementValidator, IBuildEconomy, SimpleWallet
+Assets/__Scripts/Building/Presentation/  BuildGhost, GridOverlay
+Assets/__Scripts/Building/UI/            BuildMenuUI
+Assets/__Scripts/Building/Persistence/   BuildLayout, BuildLayoutStore
+Assets/__Scripts/Editor/                 BuildSystemSetup, WebGLBuild
+```

@@ -34,6 +34,9 @@
 # Opencode directory
 .opencode/
 opencode.jsonc
+opencode_plans/
+AGENTS.md
+SUMMARY.md
 
 # Gradle cache directory
 .gradle/
