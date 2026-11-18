@@ -4,7 +4,7 @@ namespace Supermarket.Building
 {
   /// <summary>
   /// Lives on a placed prefab instance. Tracks which definition produced it and
-  /// which grid cells it owns. Registration is owned by BuildGrid.
+  /// which grid cells it owns. Registration is owned by the grid.
   /// </summary>
   public class PlacedObject : MonoBehaviour
   {
@@ -35,6 +35,12 @@ namespace Supermarket.Building
       get { return _grid; }
     }
 
+    /// <summary>Grid abstraction when available (component-backed).</summary>
+    public IGridOccupancy GridOccupancy
+    {
+      get { return _grid; }
+    }
+
     public bool IsRegistered
     {
       get { return _registered; }
@@ -51,6 +57,12 @@ namespace Supermarket.Building
       if (grid != null) transform.rotation = grid.GetPlacementRotation(quarterTurns);
     }
 
+    /// <summary>Initialize from a grid abstraction (component-backed grids supported).</summary>
+    public void Initialize(IGridOccupancy grid, PlaceableDefinition def, GridCoord origin, int turns)
+    {
+      Initialize(grid as BuildGrid, def, origin, turns);
+    }
+
     internal void MarkReleased()
     {
       _registered = false;
@@ -58,7 +70,7 @@ namespace Supermarket.Building
 
     void OnDestroy()
     {
-      // If something destroyed this object outside of BuildGrid.Remove,
+      // If something destroyed this object outside of the grid's removal path,
       // make sure the grid does not keep stale occupancy references.
       if (_registered && _grid != null) _grid.NotifyExternalDestroyed(this);
     }

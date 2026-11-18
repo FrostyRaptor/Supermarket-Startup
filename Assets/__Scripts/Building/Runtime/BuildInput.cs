@@ -5,58 +5,60 @@ namespace Supermarket.Building
 {
   /// <summary>
   /// All build-mode input reads live here so an Input System migration
-  /// only needs to replace this class.
+  /// only needs to replace this class or its provider.
   /// </summary>
   public static class BuildInput
   {
+    static IBuildInputProvider _provider;
+
+    /// <summary>
+    /// Optional input provider seam. Defaults to legacy Unity Input/EventSystem.
+    /// </summary>
+    public static IBuildInputProvider Provider
+    {
+      get { return _provider ?? LegacyBuildInputProvider.Instance; }
+      set { _provider = value; }
+    }
+
     public static bool ToggleBuildModePressed
     {
-      get { return Input.GetKeyDown(KeyCode.B); }
+      get { return Provider.ToggleBuildModePressed; }
     }
 
     public static bool CancelPressed
     {
-      get { return Input.GetKeyDown(KeyCode.Escape); }
+      get { return Provider.CancelPressed; }
     }
 
     public static bool RotatePressed
     {
-      get { return Input.GetKeyDown(KeyCode.R); }
+      get { return Provider.RotatePressed; }
     }
 
     public static bool PlacePressed
     {
-      get { return Input.GetMouseButtonDown(0); }
+      get { return Provider.PlacePressed; }
     }
 
     public static bool RemovePressed
     {
-      get { return Input.GetMouseButtonDown(1); }
+      get { return Provider.RemovePressed; }
     }
 
     public static Vector2 PointerPosition
     {
-      get { return Input.mousePosition; }
+      get { return Provider.PointerPosition; }
     }
 
     /// <summary>Returns 1-9 for the number row, or 0 when no number was pressed.</summary>
     public static int NumberPressed()
     {
-      for (int i = 1; i <= 9; i++)
-      {
-        KeyCode key = (KeyCode)((int)KeyCode.Alpha0 + i);
-        if (Input.GetKeyDown(key)) return i;
-      }
-
-      return 0;
+      return Provider.NumberPressed();
     }
 
     public static bool PointerOverUI
     {
-      get
-      {
-        return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
-      }
+      get { return Provider.PointerOverUI; }
     }
   }
 }

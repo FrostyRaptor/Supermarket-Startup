@@ -7,6 +7,9 @@ namespace Supermarket.Building
   /// <summary>
   /// Player-facing build mode: selection, hover, ghost preview,
   /// placement, removal and rotation.
+  ///
+  /// Acts as the default orchestration facade over grid, input, economy and
+  /// presentation services while preserving the existing scene/test API.
   /// </summary>
   public class BuildController : MonoBehaviour
   {
@@ -21,6 +24,10 @@ namespace Supermarket.Building
     [Tooltip("Optional. A component implementing IBuildEconomy.")]
     public MonoBehaviour economySource;
 
+    [Header("Optional Services")]
+    [Tooltip("Optional. A component implementing IBuildInputProvider.")]
+    public MonoBehaviour inputSource;
+
     [Header("Startup")]
     public bool startInBuildMode = false;
 
@@ -29,6 +36,8 @@ namespace Supermarket.Building
     PlaceableDefinition _selectedDefinition;
     int _selectedIndex = -1;
     int _rotation;
+
+    IBuildInputProvider _inputProvider;
 
     public event Action StateChanged;
 
@@ -54,10 +63,34 @@ namespace Supermarket.Building
       get { return economySource as IBuildEconomy; }
     }
 
+    /// <summary>Grid abstraction for queries/placement operations.</summary>
+    public IGridOccupancy Grid
+    {
+      get { return grid; }
+    }
+
+    /// <summary>Input provider seam (defaults to legacy Input/EventSystem).</summary>
+    public IBuildInputProvider InputProvider
+    {
+      get { return ResolveInputProvider(); }
+      set { _inputProvider = value; }
+    }
+
+    IBuildInputProvider ResolveInputProvider()
+    {
+      if (_inputProvider != null) return _inputProvider;
+
+      IBuildInputProvider provider = inputSource as IBuildInputProvider;
+      if (provider == null) provider = LegacyBuildInputProvider.Instance;
+      _inputProvider = provider;
+      return provider;
+    }
+
     void Start()
     {
       if (grid == null) grid = FindFirstObjectByType<BuildGrid>();
       if (buildCamera == null) buildCamera = Camera.main;
+      if (_inputProvider == null) ResolveInputProvider();
 
       SetBuildMode(startInBuildMode);
       RaiseStateChanged();
@@ -65,32 +98,34 @@ namespace Supermarket.Building
 
     void Update()
     {
-      if (BuildInput.ToggleBuildModePressed)
+      IBuildInputProvider input = InputProvider;
+
+      if (input.ToggleBuildModePressed)
       {
         SetBuildMode(!IsInBuildMode);
       }
 
       if (!IsInBuildMode) return;
 
-      int number = BuildInput.NumberPressed();
+      int number = input.NumberPressed();
       if (number > 0) SelectDefinition(number - 1);
 
-      if (BuildInput.RotatePressed) RotateSelection();
+      if (input.RotatePressed) RotateSelection();
 
-      if (BuildInput.CancelPressed)
+      if (input.CancelPressed)
       {
         if (_selectedDefinition != null) ClearSelection();
         else SetBuildMode(false);
         return;
       }
 
-      if (_selectedDefinition == null || grid == null)
+      if (_selectedDefinition == null || Grid == null)
       {
         HidePreview();
         return;
       }
 
-      if (BuildInput.PointerOverUI)
+      if (input.PointerOverUI)
       {
         HidePreview();
         return;
@@ -103,26 +138,37 @@ namespace Supermarket.Building
         return;
       }
 
-      PlacementResult result = grid.CanPlace(_selectedDefinition, hoverCell, _rotation);
-      if (result == PlacementResult.Valid && Economy != null && !Economy.CanAfford(_selectedDefinition.cost))
-      {
-        result = PlacementResult.InsufficientFunds;
-      }
+      PlacementResult result = EvaluatePlacement(hoverCell);
 
-      Vector3 position = grid.GetPlacementPosition(_selectedDefinition, hoverCell, _rotation);
+      Vector3 position = Grid.GetPlacementPosition(_selectedDefinition, hoverCell, _rotation);
       bool valid = result == PlacementResult.Valid;
 
       if (ghost != null) ghost.Show(_selectedDefinition, hoverCell, _rotation, position, valid);
       if (overlay != null) overlay.SetHighlight(_selectedDefinition, hoverCell, _rotation, valid);
 
-      if (BuildInput.PlacePressed)
+      if (input.PlacePressed)
       {
         TryPlace(hoverCell, result);
       }
-      else if (BuildInput.RemovePressed)
+      else if (input.RemovePressed)
       {
         TryRemove(hoverCell);
       }
+    }
+
+    PlacementResult EvaluatePlacement(GridCoord cell)
+    {
+      IGridOccupancy g = Grid;
+      if (g == null || _selectedDefinition == null) return PlacementResult.InvalidDefinition;
+
+      // Preserve existing buffer-aware validation behavior and economy gating.
+      PlacementResult result = PlacementValidator.Validate(g, _selectedDefinition, cell, _rotation, _validationBuffer);
+      if (result == PlacementResult.Valid && Economy != null && !Economy.CanAfford(_selectedDefinition.cost))
+      {
+        return PlacementResult.InsufficientFunds;
+      }
+
+      return result;
     }
 
     public void SetBuildMode(bool on)
@@ -204,9 +250,9 @@ namespace Supermarket.Building
     /// </summary>
     public bool TryPlaceSelected(GridCoord cell)
     {
-      if (grid == null || _selectedDefinition == null) return false;
+      if (Grid == null || _selectedDefinition == null) return false;
 
-      PlacementResult result = grid.CanPlace(_selectedDefinition, cell, _rotation);
+      PlacementResult result = EvaluatePlacement(cell);
       return TryPlace(cell, result);
     }
 
@@ -218,9 +264,9 @@ namespace Supermarket.Building
         return false;
       }
 
-      if (_selectedDefinition == null || grid == null) return false;
+      if (_selectedDefinition == null || Grid == null) return false;
 
-      PlacedObject placed = grid.Place(_selectedDefinition, cell, _rotation);
+      PlacedObject placed = Grid.Place(_selectedDefinition, cell, _rotation);
       if (placed == null)
       {
         Notify("Could not place here");
@@ -230,7 +276,7 @@ namespace Supermarket.Building
       IBuildEconomy economy = Economy;
       if (economy != null && !economy.TrySpend(_selectedDefinition.cost))
       {
-        grid.Remove(placed);
+        Grid.Remove(placed);
         Notify("Not enough money");
         return false;
       }
@@ -241,11 +287,14 @@ namespace Supermarket.Building
 
     void TryRemove(GridCoord cell)
     {
-      PlacedObject occupant = grid.GetOccupant(cell);
+      IGridOccupancy g = Grid;
+      if (g == null) return;
+
+      PlacedObject occupant = g.GetOccupant(cell);
       if (occupant == null) return;
 
       string label = occupant.Definition != null ? occupant.Definition.displayName : "Object";
-      if (grid.Remove(occupant)) Notify(string.Format("Removed {0}", label));
+      if (g.Remove(occupant)) Notify(string.Format("Removed {0}", label));
     }
 
     bool TryGetHoverCell(out GridCoord cell)
@@ -253,16 +302,17 @@ namespace Supermarket.Building
       cell = GridCoord.Zero;
 
       Camera cam = buildCamera != null ? buildCamera : Camera.main;
-      if (cam == null || grid == null) return false;
+      IGridOccupancy g = Grid;
+      if (cam == null || g == null) return false;
 
-      Ray ray = cam.ScreenPointToRay(BuildInput.PointerPosition);
-      Plane plane = new Plane(Vector3.up, new Vector3(0f, grid.Origin.y, 0f));
+      Ray ray = cam.ScreenPointToRay(InputProvider.PointerPosition);
+      Plane plane = new Plane(Vector3.up, new Vector3(0f, g.Origin.y, 0f));
 
       float distance;
       if (!plane.Raycast(ray, out distance)) return false;
 
-      GridCoord coord = grid.WorldToCoord(ray.GetPoint(distance));
-      if (!grid.IsInside(coord)) return false;
+      GridCoord coord = g.WorldToCoord(ray.GetPoint(distance));
+      if (!g.IsInside(coord)) return false;
 
       cell = coord;
       return true;

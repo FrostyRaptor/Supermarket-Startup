@@ -13,6 +13,12 @@ namespace Supermarket.Building
     [Header("References")]
     public BuildGrid grid;
 
+    /// <summary>Grid abstraction for overlay queries (falls back to <see cref="grid"/>).</summary>
+    public IGridOccupancy Grid
+    {
+      get { return grid; }
+    }
+
     [Header("Materials")]
     public Material lineMaterial;
     public Material validMaterial;
@@ -81,22 +87,23 @@ namespace Supermarket.Building
 
     public void RebuildGrid()
     {
-      if (grid == null || _gridMesh == null) return;
+      IGridOccupancy g = Grid;
+      if (g == null || _gridMesh == null) return;
 
       transform.SetPositionAndRotation(
-        new Vector3(grid.Origin.x, grid.Origin.y + heightOffset, grid.Origin.z),
+        new Vector3(g.Origin.x, g.Origin.y + heightOffset, g.Origin.z),
         Quaternion.identity);
 
       _vertices.Clear();
       _triangles.Clear();
 
-      float width = grid.Width * grid.CellSize;
-      float depth = grid.Depth * grid.CellSize;
+      float width = g.Width * g.CellSize;
+      float depth = g.Depth * g.CellSize;
       float half = Mathf.Max(0.002f, lineWidth) * 0.5f;
 
-      for (int x = 0; x <= grid.Width; x++)
+      for (int x = 0; x <= g.Width; x++)
       {
-        float px = x * grid.CellSize;
+        float px = x * g.CellSize;
         AddQuad(
           new Vector3(px - half, 0f, 0f),
           new Vector3(px - half, 0f, depth),
@@ -104,9 +111,9 @@ namespace Supermarket.Building
           new Vector3(px + half, 0f, 0f));
       }
 
-      for (int z = 0; z <= grid.Depth; z++)
+      for (int z = 0; z <= g.Depth; z++)
       {
-        float pz = z * grid.CellSize;
+        float pz = z * g.CellSize;
         AddQuad(
           new Vector3(0f, 0f, pz - half),
           new Vector3(0f, 0f, pz + half),
@@ -142,7 +149,8 @@ namespace Supermarket.Building
         {
           FootprintUtility.GetCellOffsets(definition.Footprint, turns, _cells);
 
-          float size = grid != null ? grid.CellSize : 1f;
+          IGridOccupancy g = Grid;
+          float size = g != null ? g.CellSize : 1f;
           float inset = Mathf.Min(cellInset, size * 0.15f);
 
           for (int i = 0; i < _cells.Count; i++)

@@ -15,6 +15,20 @@ namespace Supermarket.Building
       int turns,
       List<GridCoord> cellBuffer)
     {
+      return Validate((IGridOccupancy)grid, definition, origin, turns, cellBuffer);
+    }
+
+    /// <summary>
+    /// Validates a footprint against grid bounds and current occupancy using the
+    /// grid abstraction. The passed buffer is reused to avoid allocations.
+    /// </summary>
+    public static PlacementResult Validate(
+      IGridOccupancy grid,
+      PlaceableDefinition definition,
+      GridCoord origin,
+      int turns,
+      List<GridCoord> cellBuffer)
+    {
       if (grid == null || definition == null || definition.prefab == null || !definition.IsValid)
       {
         return PlacementResult.InvalidDefinition;

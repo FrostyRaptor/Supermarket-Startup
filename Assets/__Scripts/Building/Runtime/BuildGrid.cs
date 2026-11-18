@@ -7,8 +7,12 @@ namespace Supermarket.Building
   /// <summary>
   /// Owns the rectangular build plot: coordinate conversion, occupancy,
   /// placement, removal and change events.
+  ///
+  /// Implements <see cref="IGridOccupancy"/> and supports an injectable
+  /// <see cref="IPlacedObjectFactory"/> so spawning/hierarchy concerns can be
+  /// decoupled from occupancy/state.
   /// </summary>
-  public class BuildGrid : MonoBehaviour
+  public class BuildGrid : MonoBehaviour, IGridOccupancy
   {
     [Header("Grid")]
     public Vector2Int size = new Vector2Int(16, 16);
@@ -20,12 +24,18 @@ namespace Supermarket.Building
     [Header("Hierarchy")]
     public Transform placedRoot;
 
+    [Header("Optional Services")]
+    [Tooltip("Optional. A component implementing IPlacedObjectFactory for custom spawning/pooling.")]
+    public MonoBehaviour objectFactorySource;
+
     PlacedObject[] _occupants;
     int _storageWidth;
     int _storageDepth;
 
     readonly List<GridCoord> _cellBuffer = new List<GridCoord>();
     readonly List<PlacedObject> _queryBuffer = new List<PlacedObject>();
+
+    IPlacedObjectFactory _objectFactory;
 
     public event Action<PlacedObject> ObjectPlaced;
     public event Action<PlacedObject> ObjectRemoved;
@@ -65,9 +75,25 @@ namespace Supermarket.Building
       get { return placedRoot != null ? placedRoot : transform; }
     }
 
+    /// <summary>Factory used to create/release placed instances. Defaults to the built-in factory.</summary>
+    public IPlacedObjectFactory ObjectFactory
+    {
+      get { return _objectFactory ?? ResolveObjectFactory(); }
+      set { _objectFactory = value; }
+    }
+
+    IPlacedObjectFactory ResolveObjectFactory()
+    {
+      IPlacedObjectFactory factory = objectFactorySource as IPlacedObjectFactory;
+      if (factory == null) factory = DefaultPlacedObjectFactory.Instance;
+      _objectFactory = factory;
+      return factory;
+    }
+
     void Awake()
     {
       EnsureStorage();
+      if (_objectFactory == null) ResolveObjectFactory();
     }
 
     void OnValidate()
@@ -185,7 +211,7 @@ namespace Supermarket.Building
     public PlacementResult CanPlace(PlaceableDefinition definition, GridCoord originCell, int turns)
     {
       EnsureStorage();
-      return PlacementValidator.Validate(this, definition, originCell, turns, _cellBuffer);
+      return PlacementValidator.Validate((IGridOccupancy)this, definition, originCell, turns, _cellBuffer);
     }
 
     public PlacedObject Place(PlaceableDefinition definition, GridCoord originCell, int turns)
@@ -198,11 +224,10 @@ namespace Supermarket.Building
       Vector3 position = GetPlacementPosition(definition, originCell, turns);
       Quaternion rotation = GetPlacementRotation(turns);
 
-      GameObject instance = Instantiate(definition.prefab, position, rotation, PlacedRoot);
-      instance.name = string.Format("{0} {1}", definition.displayName, originCell);
+      IPlacedObjectFactory factory = ObjectFactory;
+      PlacedObject placed = factory.Create(definition, originCell, turns, position, rotation, PlacedRoot);
+      if (placed == null) return null;
 
-      PlacedObject placed = instance.GetComponent<PlacedObject>();
-      if (placed == null) placed = instance.AddComponent<PlacedObject>();
       placed.Initialize(this, definition, originCell, turns);
 
       FootprintUtility.GetCellOffsets(definition.Footprint, turns, _cellBuffer);
@@ -222,7 +247,7 @@ namespace Supermarket.Building
       if (!Unregister(placed)) return false;
 
       if (ObjectRemoved != null) ObjectRemoved(placed);
-      DestroyObject(placed.gameObject);
+      ObjectFactory.Release(placed);
       return true;
     }
 
@@ -285,14 +310,6 @@ namespace Supermarket.Building
       {
         if (ObjectRemoved != null) ObjectRemoved(placed);
       }
-    }
-
-    static void DestroyObject(GameObject go)
-    {
-      if (go == null) return;
-
-      if (Application.isPlaying) Destroy(go);
-      else DestroyImmediate(go);
     }
 
     void OnDrawGizmos()

@@ -5,9 +5,10 @@ using UnityEngine;
 namespace Supermarket.Building
 {
   /// <summary>
-  /// Saves and restores the placed-object layout through <see cref="PlayerPrefs"/>.
-  /// The payload is small, and PlayerPrefs is the WebGL-safe option: it avoids
-  /// blocking file I/O and is flushed to IndexedDB when saved.
+  /// Saves and restores the placed-object layout through an
+  /// <see cref="IBuildLayoutStorage"/> backend (WebGL-safe PlayerPrefs by default).
+  /// The payload is small, and PlayerPrefs avoids blocking file I/O and is flushed
+  /// to IndexedDB when saved.
   /// </summary>
   public class BuildLayoutStore : MonoBehaviour
   {
@@ -25,13 +26,33 @@ namespace Supermarket.Building
     public bool loadOnStart = true;
     public bool saveOnChange = true;
 
+    [Header("Optional Services")]
+    [Tooltip("Optional. A component implementing IBuildLayoutStorage for custom backends/slots.")]
+    public MonoBehaviour storageSource;
+
     readonly List<PlacedObject> _scratch = new List<PlacedObject>();
     readonly List<BuildLayout.BuildLayoutRecord> _validRecords = new List<BuildLayout.BuildLayoutRecord>();
 
     bool _dirty;
     bool _loading;
+    IBuildLayoutStorage _storage;
 
-    /// <summary>PlayerPrefs key that holds this store's JSON payload.</summary>
+    /// <summary>Storage backend used for persistence. Defaults to PlayerPrefs.</summary>
+    public IBuildLayoutStorage Storage
+    {
+      get { return _storage ?? ResolveStorage(); }
+      set { _storage = value; }
+    }
+
+    IBuildLayoutStorage ResolveStorage()
+    {
+      IBuildLayoutStorage storage = storageSource as IBuildLayoutStorage;
+      if (storage == null) storage = PlayerPrefsBuildLayoutStorage.Instance;
+      _storage = storage;
+      return storage;
+    }
+
+    /// <summary>Key that holds this store's JSON payload in the configured storage backend.</summary>
     public string StorageKey
     {
       get { return KeyPrefix + fileName; }
@@ -52,6 +73,7 @@ namespace Supermarket.Building
     void Start()
     {
       if (grid == null) grid = FindFirstObjectByType<BuildGrid>();
+      if (_storage == null) ResolveStorage();
 
       if (loadOnStart)
       {
@@ -105,7 +127,7 @@ namespace Supermarket.Building
       return Save();
     }
 
-    /// <summary>Serializes the current layout to PlayerPrefs. Returns true on success.</summary>
+    /// <summary>Serializes the current layout to the storage backend. Returns true on success.</summary>
     public bool Save()
     {
       if (grid == null) return false;
@@ -130,8 +152,9 @@ namespace Supermarket.Building
 
       try
       {
-        PlayerPrefs.SetString(StorageKey, JsonUtility.ToJson(layout, true));
-        PlayerPrefs.Save();
+        IBuildLayoutStorage storage = Storage;
+        storage.Save(StorageKey, JsonUtility.ToJson(layout, true));
+        storage.Flush();
         _dirty = false;
         return true;
       }
@@ -140,7 +163,7 @@ namespace Supermarket.Building
         // Bounded retry: clear the flag so we do not log every frame.
         _dirty = false;
         Debug.LogError(string.Format(
-          "BuildLayoutStore: failed to save layout to PlayerPrefs key '{0}': {1}",
+          "BuildLayoutStore: failed to save layout to storage key '{0}': {1}",
           StorageKey, e.Message));
         return false;
       }
@@ -150,9 +173,11 @@ namespace Supermarket.Building
     public bool Load()
     {
       if (grid == null || catalog == null) return false;
-      if (!PlayerPrefs.HasKey(StorageKey)) return false;
 
-      string json = PlayerPrefs.GetString(StorageKey, string.Empty);
+      IBuildLayoutStorage storage = Storage;
+      if (!storage.Has(StorageKey)) return false;
+
+      string json = storage.Load(StorageKey);
       if (string.IsNullOrEmpty(json)) return false;
 
       BuildLayout layout;
@@ -232,9 +257,10 @@ namespace Supermarket.Building
 
       try
       {
-        PlayerPrefs.SetString(StorageKey + ".corrupt", json);
-        PlayerPrefs.DeleteKey(StorageKey);
-        PlayerPrefs.Save();
+        IBuildLayoutStorage storage = Storage;
+        storage.Save(StorageKey + ".corrupt", json);
+        storage.Delete(StorageKey);
+        storage.Flush();
       }
       catch (Exception e)
       {
