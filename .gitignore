@@ -37,6 +37,8 @@ opencode.jsonc
 opencode_plans/
 AGENTS.md
 SUMMARY.md
+EXPANSION.md
+FINALGAMEPLAN.md
 
 # Gradle cache directory
 .gradle/
