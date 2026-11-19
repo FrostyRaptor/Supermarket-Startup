@@ -2,6 +2,7 @@
     "name": "Supermarket.Runtime",
     "rootNamespace": "Supermarket",
     "references": [
+        "Unity.InputSystem",
         "UnityEngine.UI"
     ],
     "includePlatforms": [],

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
 namespace Supermarket.Building
@@ -560,9 +561,24 @@ namespace Supermarket.Building
 
     static void EnsureEventSystem()
     {
-      if (Object.FindFirstObjectByType<EventSystem>() != null) return;
+      EventSystem eventSystem = Object.FindFirstObjectByType<EventSystem>();
+      if (eventSystem == null)
+      {
+        new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
+        return;
+      }
 
-      new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
+      // Replace a legacy input module if one was added elsewhere in the scene.
+      if (eventSystem.GetComponent<InputSystemUIInputModule>() != null) return;
+
+      StandaloneInputModule legacyModule = eventSystem.GetComponent<StandaloneInputModule>();
+      if (legacyModule != null)
+      {
+        legacyModule.enabled = false;
+        Object.Destroy(legacyModule);
+      }
+
+      eventSystem.gameObject.AddComponent<InputSystemUIInputModule>();
     }
   }
 }

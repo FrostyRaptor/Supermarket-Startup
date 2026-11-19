@@ -69,7 +69,7 @@ namespace Supermarket.Building
       get { return grid; }
     }
 
-    /// <summary>Input provider seam (defaults to legacy Input/EventSystem).</summary>
+    /// <summary>Input provider seam (defaults to Input System/EventSystem).</summary>
     public IBuildInputProvider InputProvider
     {
       get { return ResolveInputProvider(); }
@@ -81,7 +81,7 @@ namespace Supermarket.Building
       if (_inputProvider != null) return _inputProvider;
 
       IBuildInputProvider provider = inputSource as IBuildInputProvider;
-      if (provider == null) provider = LegacyBuildInputProvider.Instance;
+      if (provider == null) provider = InputSystemBuildInputProvider.Instance;
       _inputProvider = provider;
       return provider;
     }

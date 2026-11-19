@@ -1,22 +1,21 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Supermarket.Building
 {
   /// <summary>
-  /// All build-mode input reads live here so an Input System migration
-  /// only needs to replace this class or its provider.
+  /// All build-mode input reads live here so input sources can be swapped
+  /// without changing gameplay code.
   /// </summary>
   public static class BuildInput
   {
     static IBuildInputProvider _provider;
 
     /// <summary>
-    /// Optional input provider seam. Defaults to legacy Unity Input/EventSystem.
+    /// Optional input provider seam. Defaults to Input System/EventSystem.
     /// </summary>
     public static IBuildInputProvider Provider
     {
-      get { return _provider ?? LegacyBuildInputProvider.Instance; }
+      get { return _provider ?? InputSystemBuildInputProvider.Instance; }
       set { _provider = value; }
     }
 
