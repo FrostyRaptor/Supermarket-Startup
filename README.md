@@ -5,8 +5,20 @@ CS 382 FA26 - Semester Project
 ## Description
 
 - CS 382 Semester Project
-- Grid-based supermarket building demo
+- Supermarket tycoon: build the store, hire staff, order stock, satisfy daily demand, upgrade equipment, unlock sections and obtain a liquor license
 - Final build published to **WebGL** (Unity Play)
+
+## Final Game Setup
+
+The enabled scene (`Assets/_Scenes/__Scene_0.unity`) is already wired with the
+full game systems under `GameSystems`. To regenerate config assets, placeable
+definitions, level materials and scene references, run:
+
+`Tools > Supermarket > Final Game > Setup Final Game`
+
+All economy, wage, demand, license, unlock and upgrade values live in the
+ScriptableObjects under `Assets/_ScriptableObjects/Game/` and can be tuned in
+the Inspector.
 
 ## Requirements
 
@@ -28,9 +40,19 @@ rebuild, and re-upload.
 
 ## Persistence
 
-The placed-object layout is stored with `PlayerPrefs` (WebGL-safe; no blocking
-file I/O). It is written immediately on every placement/removal and flushed when
-the tab loses focus. See `Assets/__Scripts/Building/README.md` for the save format.
+The full game state (day, wallet, sections, employees, inventory, deliveries,
+upgrades and license progress) and the placed-object layout are stored with
+`PlayerPrefs` (WebGL-safe; no blocking file I/O). Saves are written on day change,
+hiring/firing, section changes, build changes, and when the tab loses focus.
+See `Assets/__Scripts/Building/README.md` for the layout save format.
+
+## HUD
+
+- Top-left: business day, date (`MM/DD/YYYY`) and net dollars per real minute.
+- Top-right: current balance.
+- Bottom-left: employee hiring/firing panel.
+- Bottom-right: build mode button.
+- Above build mode: order manager, sections/license and upgrade panels.
 
 ## Tests
 

@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30a29ac49d16d4402ae9f46c265a335b, type: 3}
+  m_Name: UP_CheckoutLane
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Config.UpgradeProfile
+  id: checkoutlane
+  displayName: Checkout Lane
+  capacityByLevel: 0100000001000000010000000100000001000000
+  upgradeCostByLevel: 000000002c0100002602000084030000dc050000
+  efficiencyByLevel:
+  - 1
+  - 1.35
+  - 1.8
+  - 2.4
+  - 3.2
+  yieldByLevel: 0100000002000000030000000400000005000000
+  levelMaterials:
+  - {fileID: 2100000, guid: 903241058ba9e4126bfba9b1d8d9c579, type: 2}
+  - {fileID: 2100000, guid: 70b1a898f5111427ea53ff388ba39d53, type: 2}
+  - {fileID: 2100000, guid: 33cbcf5c4a906470898e61428ae5a8d4, type: 2}
+  - {fileID: 2100000, guid: 7dbf5046d879d4e1b940e60b6f94d56c, type: 2}
+  - {fileID: 2100000, guid: 0dbe5e91f9ac349fc9f79c78d98c5681, type: 2}

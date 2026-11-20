@@ -1052,6 +1052,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 226532292}
+  - component: {fileID: 226532293}
   m_Layer: 0
   m_Name: Store
   m_TagString: Untagged
@@ -1081,6 +1082,22 @@ Transform:
   - {fileID: 1519047449}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &226532293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 226532291}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b2c63ca931864c1b92069f6fa4296b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Store.StoreSection
+  type: 0
+  displayName: General
+  startsUnlocked: 1
+  slots: []
 --- !u!1001 &239473101
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1520,6 +1537,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 299382855}
+  - component: {fileID: 299382856}
   m_Layer: 0
   m_Name: AlcoholWalls
   m_TagString: Untagged
@@ -1544,6 +1562,22 @@ Transform:
   - {fileID: 2062137517}
   m_Father: {fileID: 1519047449}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &299382856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 299382854}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b2c63ca931864c1b92069f6fa4296b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Store.StoreSection
+  type: 6
+  displayName: Alcohol
+  startsUnlocked: 0
+  slots: []
 --- !u!1 &317362700
 GameObject:
   m_ObjectHideFlags: 0
@@ -2196,7 +2230,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Building.BuildMenuUI
   catalog: {fileID: 11400000, guid: adea5749335bb434391d054e2dfdd075, type: 2}
   controller: {fileID: 701136524}
-  wallet: {fileID: 701136526}
+  wallet: {fileID: 701136529}
 --- !u!4 &468648496
 Transform:
   m_ObjectHideFlags: 0
@@ -2386,6 +2420,280 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 494295396}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &510327163
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 510327177}
+  - component: {fileID: 510327176}
+  - component: {fileID: 510327175}
+  - component: {fileID: 510327174}
+  - component: {fileID: 510327173}
+  - component: {fileID: 510327172}
+  - component: {fileID: 510327171}
+  - component: {fileID: 510327170}
+  - component: {fileID: 510327169}
+  - component: {fileID: 510327168}
+  - component: {fileID: 510327167}
+  - component: {fileID: 510327166}
+  - component: {fileID: 510327165}
+  - component: {fileID: 510327164}
+  m_Layer: 0
+  m_Name: GameSystems
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &510327164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510327163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1bae900dcabb467a981d61e0e210ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.UI.HUDController
+  game: {fileID: 510327165}
+  clock: {fileID: 510327176}
+  economy: {fileID: 701136529}
+  notices: {fileID: 510327175}
+  sections: {fileID: 510327174}
+  employees: {fileID: 510327173}
+  upgrades: {fileID: 510327172}
+  inventory: {fileID: 510327171}
+  orders: {fileID: 510327169}
+  sales: {fileID: 510327170}
+  progression: {fileID: 510327168}
+  license: {fileID: 510327167}
+  catalog: {fileID: 11400000, guid: 50089de9475ee4124a15b630eb5bdb4e, type: 2}
+--- !u!114 &510327165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510327163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 563d4a446bcf14bd98fd875bce79fcc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Core.GameManager
+  config: {fileID: 0}
+  clock: {fileID: 510327176}
+  economy: {fileID: 701136529}
+  notices: {fileID: 510327175}
+  save: {fileID: 510327166}
+  sections: {fileID: 510327174}
+  employees: {fileID: 510327173}
+  upgrades: {fileID: 510327172}
+  inventory: {fileID: 510327171}
+  sales: {fileID: 510327170}
+  orders: {fileID: 510327169}
+  progression: {fileID: 510327168}
+  license: {fileID: 510327167}
+  grid: {fileID: 701136527}
+--- !u!114 &510327166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510327163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2f5b621758c94a809e026c69b7a4152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Core.GameSave
+  game: {fileID: 510327165}
+--- !u!114 &510327167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510327163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96f7b0bdb5abc4dce8a332c4aff20337, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Progression.LiquorLicense
+  config: {fileID: 0}
+  notices: {fileID: 510327175}
+--- !u!114 &510327168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510327163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23f4f91746ad140a5b27ea45435a55fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Progression.ProgressionManager
+  sections: {fileID: 510327174}
+  license: {fileID: 510327167}
+  notices: {fileID: 510327175}
+--- !u!114 &510327169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510327163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8799f56044d1c41608a5f7e613af97ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Products.OrderManager
+  config: {fileID: 0}
+  catalog: {fileID: 11400000, guid: 50089de9475ee4124a15b630eb5bdb4e, type: 2}
+  inventory: {fileID: 510327171}
+  economy: {fileID: 701136529}
+  sales: {fileID: 510327170}
+  progression: {fileID: 510327168}
+  clock: {fileID: 510327176}
+  notices: {fileID: 510327175}
+--- !u!114 &510327170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510327163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92b408d6c03584e74bb79d799c1f45bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Customers.SalesProcessor
+  config: {fileID: 0}
+  catalog: {fileID: 11400000, guid: 50089de9475ee4124a15b630eb5bdb4e, type: 2}
+  inventory: {fileID: 510327171}
+  economy: {fileID: 701136529}
+  employees: {fileID: 510327173}
+  sections: {fileID: 510327174}
+  progression: {fileID: 510327168}
+  upgrades: {fileID: 510327172}
+--- !u!114 &510327171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510327163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7176242952d354b48a049c08e06242d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Products.Inventory
+  catalog: {fileID: 11400000, guid: 50089de9475ee4124a15b630eb5bdb4e, type: 2}
+  sections: {fileID: 510327174}
+  employees: {fileID: 510327173}
+  upgrades: {fileID: 510327172}
+  notices: {fileID: 510327175}
+  storage: []
+  shelf: []
+  finished: []
+  deliveries: []
+--- !u!114 &510327172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510327163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a9d314283ec74c739d14da5bec3fe11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Store.UpgradeSystem
+  economy: {fileID: 701136529}
+  notices: {fileID: 510327175}
+  grid: {fileID: 701136527}
+  LaneProfile: {fileID: 11400000, guid: 2ca05d96fe49b4d668dd5158b2874cc6, type: 2}
+  LoadingZoneProfile: {fileID: 11400000, guid: 1d0cf41a7564d4593a78dcdd1f3b5875, type: 2}
+  StorageShelfProfile: {fileID: 11400000, guid: ebdf8d8893d75496d90ee7b48bfb12b8, type: 2}
+  ButcherProfile: {fileID: 11400000, guid: c807698a433d2449f90d5c5e46c24c9b, type: 2}
+  BakeryProfile: {fileID: 11400000, guid: edfac6f9c031241d48cf7dc823cffbd1, type: 2}
+  DeliProfile: {fileID: 11400000, guid: 0552f0b4801c34de1978ae418c8391f4, type: 2}
+--- !u!114 &510327173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510327163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8d4c8ca48b6743268e394275f9165a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Employees.EmployeeManager
+  config: {fileID: 0}
+  sections: {fileID: 510327174}
+  notices: {fileID: 510327175}
+--- !u!114 &510327174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510327163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8895ca8278511443e816cf8ed37cdb13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Store.SectionManager
+  config: {fileID: 11400000, guid: 9055f4dfe4ed64daca1ff00e1e5b97e1, type: 2}
+  economy: {fileID: 701136529}
+  notices: {fileID: 510327175}
+--- !u!114 &510327175
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510327163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86d1c1881a1884335ab54f368304b2ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Core.NotificationCenter
+--- !u!114 &510327176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510327163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 734d39e542c634b7f91690808ecba582, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Core.GameClock
+  config: {fileID: 0}
+--- !u!4 &510327177
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510327163}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &531149632
 GameObject:
   m_ObjectHideFlags: 0
@@ -2945,6 +3253,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 666314692}
+  - component: {fileID: 666314693}
   m_Layer: 0
   m_Name: BakeryWalls
   m_TagString: Untagged
@@ -2969,6 +3278,22 @@ Transform:
   - {fileID: 932155328}
   m_Father: {fileID: 1519047449}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &666314693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 666314691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b2c63ca931864c1b92069f6fa4296b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Store.StoreSection
+  type: 3
+  displayName: Bakery
+  startsUnlocked: 0
+  slots: []
 --- !u!1001 &676880605
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3215,16 +3540,16 @@ GameObject:
   m_Component:
   - component: {fileID: 701136528}
   - component: {fileID: 701136527}
-  - component: {fileID: 701136526}
   - component: {fileID: 701136525}
   - component: {fileID: 701136524}
+  - component: {fileID: 701136529}
   m_Layer: 0
   m_Name: BuildSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &701136524
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3243,7 +3568,7 @@ MonoBehaviour:
   ghost: {fileID: 317362701}
   overlay: {fileID: 833398760}
   menu: {fileID: 468648495}
-  economySource: {fileID: 701136526}
+  economySource: {fileID: 701136529}
   inputSource: {fileID: 0}
   startInBuildMode: 0
 --- !u!114 &701136525
@@ -3264,19 +3589,6 @@ MonoBehaviour:
   loadOnStart: 1
   saveOnChange: 1
   storageSource: {fileID: 0}
---- !u!114 &701136526
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 701136523}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f9aea45651f349e09bf5a8e79dc3476, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Building.SimpleWallet
-  startingBalance: 1000
 --- !u!114 &701136527
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3313,6 +3625,20 @@ Transform:
   - {fileID: 468648496}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &701136529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 701136523}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2d5e687683ca49c4af530492c2bbc52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Economy.Economy
+  startingBalance: 1000
+  config: {fileID: 0}
 --- !u!1001 &703175563
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4143,6 +4469,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 908923754}
+  - component: {fileID: 908923755}
   m_Layer: 0
   m_Name: CheckoutWalls
   m_TagString: Untagged
@@ -4167,6 +4494,22 @@ Transform:
   - {fileID: 2013122810}
   m_Father: {fileID: 1519047449}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &908923755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 908923753}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b2c63ca931864c1b92069f6fa4296b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Store.StoreSection
+  type: 5
+  displayName: Checkout
+  startsUnlocked: 1
+  slots: []
 --- !u!1001 &919300420
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5805,6 +6148,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1412792107}
+  - component: {fileID: 1412792108}
   m_Layer: 0
   m_Name: StorageWalls
   m_TagString: Untagged
@@ -5831,6 +6175,22 @@ Transform:
   - {fileID: 1328600912}
   m_Father: {fileID: 1519047449}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1412792108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1412792106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b2c63ca931864c1b92069f6fa4296b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Store.StoreSection
+  type: 1
+  displayName: Storage
+  startsUnlocked: 1
+  slots: []
 --- !u!1001 &1467238880
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7710,6 +8070,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1843860465}
+  - component: {fileID: 1843860466}
   m_Layer: 0
   m_Name: DeliWalls
   m_TagString: Untagged
@@ -7736,6 +8097,22 @@ Transform:
   - {fileID: 835297040}
   m_Father: {fileID: 1519047449}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1843860466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1843860464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b2c63ca931864c1b92069f6fa4296b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Store.StoreSection
+  type: 4
+  displayName: Deli
+  startsUnlocked: 0
+  slots: []
 --- !u!1001 &1868759023
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8427,6 +8804,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1971063146}
+  - component: {fileID: 1971063147}
   m_Layer: 0
   m_Name: ButcherWalls
   m_TagString: Untagged
@@ -8451,6 +8829,22 @@ Transform:
   - {fileID: 1969838772}
   m_Father: {fileID: 1519047449}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1971063147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1971063145}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b2c63ca931864c1b92069f6fa4296b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Store.StoreSection
+  type: 2
+  displayName: Butcher
+  startsUnlocked: 0
+  slots: []
 --- !u!1001 &1971944667
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9412,3 +9806,4 @@ SceneRoots:
   - {fileID: 1667133860}
   - {fileID: 701136528}
   - {fileID: 226532292}
+  - {fileID: 510327177}

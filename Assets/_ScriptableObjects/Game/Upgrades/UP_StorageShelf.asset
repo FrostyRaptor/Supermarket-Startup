@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30a29ac49d16d4402ae9f46c265a335b, type: 3}
+  m_Name: UP_StorageShelf
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Config.UpgradeProfile
+  id: storageshelf
+  displayName: Storage Shelf
+  capacityByLevel: 280000003c0000005a00000082000000b4000000
+  upgradeCostByLevel: 0000000004010000e00100003403000014050000
+  efficiencyByLevel:
+  - 1
+  - 1.3
+  - 1.7
+  - 2.2
+  - 3
+  yieldByLevel: 0100000002000000030000000400000005000000
+  levelMaterials:
+  - {fileID: 2100000, guid: b1518c43ecef34a38b9990eed79fc729, type: 2}
+  - {fileID: 2100000, guid: cdad38fe655b749d688ba6239c3d34df, type: 2}
+  - {fileID: 2100000, guid: 85d012ad61b2341f39de28cfcc3d78f4, type: 2}
+  - {fileID: 2100000, guid: 7c11a955d1dba4340879bfe39feb31b8, type: 2}
+  - {fileID: 2100000, guid: 953819d31dce846e498b5ce4bb94da51, type: 2}

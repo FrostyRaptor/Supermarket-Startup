@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d91d2b38313d4c6884008a3c5bfe3f4, type: 3}
+  m_Name: SectionConfig
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Config.SectionConfig
+  sections:
+  - type: 0
+    displayName: General
+    unlockCost: 0
+    center: {x: 0, y: 0, z: 0}
+    slots: []
+  - type: 1
+    displayName: Storage
+    unlockCost: 0
+    center: {x: 50, y: 0, z: 220}
+    slots:
+    - {x: -8, y: 0, z: 0}
+    - {x: 0, y: 0, z: 0}
+    - {x: 8, y: 0, z: 0}
+  - type: 5
+    displayName: Checkout
+    unlockCost: 0
+    center: {x: 8, y: 0, z: 8}
+    slots:
+    - {x: 0, y: 0, z: 0}
+    - {x: 4, y: 0, z: 0}
+    - {x: 8, y: 0, z: 0}
+    - {x: 12, y: 0, z: 0}
+  - type: 2
+    displayName: Butcher
+    unlockCost: 900
+    center: {x: 56, y: 0, z: 24}
+    slots:
+    - {x: -4, y: 0, z: 0}
+    - {x: 4, y: 0, z: 0}
+  - type: 3
+    displayName: Bakery
+    unlockCost: 800
+    center: {x: 24, y: 0, z: 56}
+    slots:
+    - {x: -4, y: 0, z: 0}
+    - {x: 4, y: 0, z: 0}
+  - type: 4
+    displayName: Deli
+    unlockCost: 850
+    center: {x: 24, y: 0, z: -16}
+    slots:
+    - {x: -4, y: 0, z: 0}
+    - {x: 4, y: 0, z: 0}
+  - type: 6
+    displayName: Alcohol
+    unlockCost: 1500
+    center: {x: 8, y: 0, z: -16}
+    slots:
+    - {x: 0, y: 0, z: 0}
+    - {x: 4, y: 0, z: 0}
+  checkoutLaneCost: 250
+  loadingZoneCost: 300
+  maxCheckoutLanes: 4
+  maxLoadingZones: 3

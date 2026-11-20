@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30a29ac49d16d4402ae9f46c265a335b, type: 3}
+  m_Name: UP_Deli
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Config.UpgradeProfile
+  id: deli
+  displayName: Deli Equipment
+  capacityByLevel: 0100000001000000010000000100000001000000
+  upgradeCostByLevel: 000000005e0100008a0200001a040000a4060000
+  efficiencyByLevel:
+  - 1
+  - 1.3
+  - 1.7
+  - 2.2
+  - 3
+  yieldByLevel: 0100000002000000030000000400000005000000
+  levelMaterials:
+  - {fileID: 2100000, guid: fea4a0ec1b24c448c8601ad75ba77c4f, type: 2}
+  - {fileID: 2100000, guid: ac118fd93318a46cb88864cc73c9f972, type: 2}
+  - {fileID: 2100000, guid: ca7c01d5e77114978ad524425714fe7c, type: 2}
+  - {fileID: 2100000, guid: 731c93b9b374c49bb934ebc2fe558891, type: 2}
+  - {fileID: 2100000, guid: 2cbb5f4a750b14df09a1705a04dba5f4, type: 2}

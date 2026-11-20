@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30a29ac49d16d4402ae9f46c265a335b, type: 3}
+  m_Name: UP_Butcher
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Config.UpgradeProfile
+  id: butcher
+  displayName: Butcher Equipment
+  capacityByLevel: 0100000001000000010000000100000001000000
+  upgradeCostByLevel: 000000005e0100008a0200001a040000a4060000
+  efficiencyByLevel:
+  - 1
+  - 1.3
+  - 1.7
+  - 2.2
+  - 3
+  yieldByLevel: 0100000002000000030000000400000005000000
+  levelMaterials:
+  - {fileID: 2100000, guid: 90f8fe319b7f94c53b9a370c60d52d81, type: 2}
+  - {fileID: 2100000, guid: 1bd20a24d93b34595b277fadf5e70dd9, type: 2}
+  - {fileID: 2100000, guid: ce4facd15b25e4331a384d5780aaa5cd, type: 2}
+  - {fileID: 2100000, guid: 52ccb7249c58f4c0496a0906d1089f33, type: 2}
+  - {fileID: 2100000, guid: e44892cfdfdc34bc5887972262e87f6b, type: 2}

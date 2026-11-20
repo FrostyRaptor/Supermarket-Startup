@@ -1,0 +1,155 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4b9c8dd33748482abca2cea687c83a5, type: 3}
+  m_Name: ProductCatalog
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Config.ProductCatalog
+  products:
+  - id: milk
+    displayName: Milk
+    section: 0
+    kind: 0
+    unitCost: 12
+    salePrice: 22
+    baseDailyDemand: 16
+    inputProductId: 
+    inputUnits: 1
+    requiresLicense: 0
+  - id: soda
+    displayName: Soda
+    section: 0
+    kind: 0
+    unitCost: 8
+    salePrice: 16
+    baseDailyDemand: 14
+    inputProductId: 
+    inputUnits: 1
+    requiresLicense: 0
+  - id: cereal
+    displayName: Cereal
+    section: 0
+    kind: 0
+    unitCost: 14
+    salePrice: 26
+    baseDailyDemand: 10
+    inputProductId: 
+    inputUnits: 1
+    requiresLicense: 0
+  - id: beer
+    displayName: Beer
+    section: 6
+    kind: 0
+    unitCost: 18
+    salePrice: 38
+    baseDailyDemand: 12
+    inputProductId: 
+    inputUnits: 1
+    requiresLicense: 1
+  - id: wine
+    displayName: Wine
+    section: 6
+    kind: 0
+    unitCost: 40
+    salePrice: 80
+    baseDailyDemand: 8
+    inputProductId: 
+    inputUnits: 1
+    requiresLicense: 1
+  - id: raw_meat
+    displayName: Raw Meat
+    section: 2
+    kind: 0
+    unitCost: 20
+    salePrice: 0
+    baseDailyDemand: 0
+    inputProductId: 
+    inputUnits: 1
+    requiresLicense: 0
+  - id: steak
+    displayName: Steak
+    section: 2
+    kind: 1
+    unitCost: 0
+    salePrice: 65
+    baseDailyDemand: 12
+    inputProductId: raw_meat
+    inputUnits: 2
+    requiresLicense: 0
+  - id: raw_fish
+    displayName: Raw Fish
+    section: 2
+    kind: 0
+    unitCost: 24
+    salePrice: 0
+    baseDailyDemand: 0
+    inputProductId: 
+    inputUnits: 1
+    requiresLicense: 0
+  - id: salmon
+    displayName: Salmon
+    section: 2
+    kind: 1
+    unitCost: 0
+    salePrice: 75
+    baseDailyDemand: 8
+    inputProductId: raw_fish
+    inputUnits: 2
+    requiresLicense: 0
+  - id: flour
+    displayName: Flour
+    section: 3
+    kind: 0
+    unitCost: 8
+    salePrice: 0
+    baseDailyDemand: 0
+    inputProductId: 
+    inputUnits: 1
+    requiresLicense: 0
+  - id: bread
+    displayName: Bread
+    section: 3
+    kind: 1
+    unitCost: 0
+    salePrice: 14
+    baseDailyDemand: 18
+    inputProductId: flour
+    inputUnits: 1
+    requiresLicense: 0
+  - id: cake
+    displayName: Cake
+    section: 3
+    kind: 1
+    unitCost: 0
+    salePrice: 30
+    baseDailyDemand: 8
+    inputProductId: flour
+    inputUnits: 3
+    requiresLicense: 0
+  - id: deli_meat
+    displayName: Deli Meat
+    section: 4
+    kind: 0
+    unitCost: 18
+    salePrice: 0
+    baseDailyDemand: 0
+    inputProductId: 
+    inputUnits: 1
+    requiresLicense: 0
+  - id: sandwich
+    displayName: Sandwich
+    section: 4
+    kind: 1
+    unitCost: 0
+    salePrice: 28
+    baseDailyDemand: 14
+    inputProductId: deli_meat
+    inputUnits: 1
+    requiresLicense: 0

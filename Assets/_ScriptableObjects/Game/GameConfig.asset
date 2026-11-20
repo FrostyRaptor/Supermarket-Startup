@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a07e2f9a27774c70bb032f09c718373, type: 3}
+  m_Name: GameConfig
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Config.GameConfig
+  realMinutesPerDay: 10
+  startMonth: 1
+  startDay: 1
+  startYear: 2026
+  startingMoney: 1500
+  baseDailyDemand: 18
+  demandGrowthPerDay: 0.35
+  suggestionFactor: 1.12
+  checkoutCustomersPerEmployee: 14
+  licenseStage1Fee: 400
+  licenseStage1MinDays: 3
+  licenseStage1MaxDays: 10
+  licenseStage1FailChance: 0.2
+  licenseStage2Fee: 1200
+  licenseStage2MinDays: 5
+  licenseStage2MaxDays: 20
+  licenseStage2FailChance: 0.25

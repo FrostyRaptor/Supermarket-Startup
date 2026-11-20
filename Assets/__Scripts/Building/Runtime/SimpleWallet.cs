@@ -16,7 +16,7 @@ namespace Supermarket.Building
     /// <summary>Raised whenever the balance changes.</summary>
     public event Action<int> BalanceChanged;
 
-    void Awake()
+    protected virtual void Awake()
     {
       Initialize(startingBalance);
     }

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b08581589f2a4f28a33c9e5758e14ea, type: 3}
+  m_Name: Def_Shelf_1x1
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Building.PlaceableDefinition
+  id: shelf_1x1
+  displayName: Shelf 1x1
+  category: 0
+  prefab: {fileID: 5410061971072033612, guid: f6c0cdb0675b44de8a1b74b1eceee647, type: 3}
+  footprint: {x: 1, y: 1}
+  pivotOffset: {x: 0, y: 0, z: 0}
+  cost: 180
+  rotatable: 1
+  icon: {fileID: 0}
+  upgradeProfile: {fileID: 11400000, guid: 1e76e1a6d904342278a60889656f5243, type: 2}

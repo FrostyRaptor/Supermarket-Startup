@@ -36,8 +36,6 @@ namespace Supermarket.Building
     static readonly Color BuildActiveColor = new Color(0.90f, 0.47f, 0.08f, 1f);
     static readonly Color BuildLabelColor = new Color(0.15f, 0.09f, 0.02f, 1f);
 
-    static Sprite _uiSprite;
-
     readonly List<Button> _itemButtons = new List<Button>();
     readonly List<int> _buttonCatalogIndex = new List<int>();
 
@@ -430,12 +428,10 @@ namespace Supermarket.Building
 
     static Sprite GetUiSprite()
     {
-      if (_uiSprite == null)
-      {
-        _uiSprite = Resources.GetBuiltinResource<Sprite>("UI/Skin/UISprite.psd");
-      }
-
-      return _uiSprite;
+      // Plain colored Images render correctly without a sprite. The old built-in
+      // skin sprite path was removed in newer Unity versions and only produced
+      // load errors in the console.
+      return null;
     }
 
     void ToggleBuildMode()

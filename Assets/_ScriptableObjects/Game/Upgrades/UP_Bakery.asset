@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30a29ac49d16d4402ae9f46c265a335b, type: 3}
+  m_Name: UP_Bakery
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Config.UpgradeProfile
+  id: bakery
+  displayName: Bakery Equipment
+  capacityByLevel: 0100000001000000010000000100000001000000
+  upgradeCostByLevel: 000000005e0100008a0200001a040000a4060000
+  efficiencyByLevel:
+  - 1
+  - 1.3
+  - 1.7
+  - 2.2
+  - 3
+  yieldByLevel: 0100000002000000030000000400000005000000
+  levelMaterials:
+  - {fileID: 2100000, guid: 715a4360bfcb94cb5b9bef09b63ee6b0, type: 2}
+  - {fileID: 2100000, guid: 53640997edc934ab2b02c254980ca240, type: 2}
+  - {fileID: 2100000, guid: 898a2ba14b469480f8754b04bdcf387a, type: 2}
+  - {fileID: 2100000, guid: 53afcaef7b1914ba28eaeade98e49d8b, type: 2}
+  - {fileID: 2100000, guid: ceff8aaecd4b94c6b9ecf8b9939e3699, type: 2}

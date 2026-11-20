@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30a29ac49d16d4402ae9f46c265a335b, type: 3}
+  m_Name: UP_LoadingZone
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Config.UpgradeProfile
+  id: loadingzone
+  displayName: Loading Zone
+  capacityByLevel: 0100000001000000010000000100000001000000
+  upgradeCostByLevel: 0000000018010000f40100005203000078050000
+  efficiencyByLevel:
+  - 1
+  - 1.4
+  - 1.9
+  - 2.5
+  - 3.3
+  yieldByLevel: 0100000002000000030000000400000005000000
+  levelMaterials:
+  - {fileID: 2100000, guid: 949c0d61dddd145e889c3fc61002cd61, type: 2}
+  - {fileID: 2100000, guid: a92edeb9260934f92a2a085a203b1516, type: 2}
+  - {fileID: 2100000, guid: 4b673299e0aaa4812877fedfd46d9a5e, type: 2}
+  - {fileID: 2100000, guid: 94bc95b23c40442c799460918795c3a6, type: 2}
+  - {fileID: 2100000, guid: a3a0670ce2e614d479e3e889ed80034e, type: 2}

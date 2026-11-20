@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b08581589f2a4f28a33c9e5758e14ea, type: 3}
+  m_Name: Def_Cooler_2x1
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Building.PlaceableDefinition
+  id: cooler_2x1
+  displayName: Cooler 2x1
+  category: 0
+  prefab: {fileID: 3356495141275808881, guid: df116b7fcd07d4d95814a8305318adfb, type: 3}
+  footprint: {x: 2, y: 1}
+  pivotOffset: {x: 0, y: 0, z: 0}
+  cost: 260
+  rotatable: 1
+  icon: {fileID: 0}
+  upgradeProfile: {fileID: 11400000, guid: 376c3f47e33304a2190f84351570261f, type: 2}

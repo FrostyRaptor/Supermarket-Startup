@@ -1,4 +1,5 @@
 using UnityEngine;
+using Supermarket.Config;
 
 namespace Supermarket.Building
 {
@@ -27,6 +28,10 @@ namespace Supermarket.Building
 
     [Header("UI")]
     public Sprite icon;
+
+    [Header("Upgrades")]
+    [Tooltip("Optional. When set, placed instances gain an UpgradeableFixture with this curve.")]
+    public UpgradeProfile upgradeProfile;
 
     public Vector2Int Footprint
     {
