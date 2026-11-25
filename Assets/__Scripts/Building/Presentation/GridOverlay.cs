@@ -97,31 +97,63 @@ namespace Supermarket.Building
       _vertices.Clear();
       _triangles.Clear();
 
-      float width = g.Width * g.CellSize;
-      float depth = g.Depth * g.CellSize;
       float half = Mathf.Max(0.002f, lineWidth) * 0.5f;
+      float cell = g.CellSize;
 
+      // Draw grid lines only beside buildable cells so walled sections do not
+      // look placeable. Consecutive edges are merged into runs to keep the mesh
+      // small even on the full store floor.
       for (int x = 0; x <= g.Width; x++)
       {
-        float px = x * g.CellSize;
-        AddQuad(
-          new Vector3(px - half, 0f, 0f),
-          new Vector3(px - half, 0f, depth),
-          new Vector3(px + half, 0f, depth),
-          new Vector3(px + half, 0f, 0f));
+        int runStart = -1;
+        for (int z = 0; z <= g.Depth; z++)
+        {
+          bool draw = z < g.Depth && (IsBuildable(g, x - 1, z) || IsBuildable(g, x, z));
+          if (draw && runStart < 0) runStart = z;
+          if (!draw && runStart >= 0)
+          {
+            float px = x * cell;
+            float z0 = runStart * cell;
+            float z1 = z * cell;
+            AddQuad(
+              new Vector3(px - half, 0f, z0),
+              new Vector3(px - half, 0f, z1),
+              new Vector3(px + half, 0f, z1),
+              new Vector3(px + half, 0f, z0));
+            runStart = -1;
+          }
+        }
       }
 
       for (int z = 0; z <= g.Depth; z++)
       {
-        float pz = z * g.CellSize;
-        AddQuad(
-          new Vector3(0f, 0f, pz - half),
-          new Vector3(0f, 0f, pz + half),
-          new Vector3(width, 0f, pz + half),
-          new Vector3(width, 0f, pz - half));
+        int runStart = -1;
+        for (int x = 0; x <= g.Width; x++)
+        {
+          bool draw = x < g.Width && (IsBuildable(g, x, z - 1) || IsBuildable(g, x, z));
+          if (draw && runStart < 0) runStart = x;
+          if (!draw && runStart >= 0)
+          {
+            float pz = z * cell;
+            float x0 = runStart * cell;
+            float x1 = x * cell;
+            AddQuad(
+              new Vector3(x0, 0f, pz - half),
+              new Vector3(x0, 0f, pz + half),
+              new Vector3(x1, 0f, pz + half),
+              new Vector3(x1, 0f, pz - half));
+            runStart = -1;
+          }
+        }
       }
 
       ApplyMesh(_gridMesh, _vertices, _triangles);
+    }
+
+    static bool IsBuildable(IGridOccupancy grid, int x, int z)
+    {
+      return x >= 0 && z >= 0 && x < grid.Width && z < grid.Depth &&
+             grid.IsInside(new GridCoord(x, z));
     }
 
     public void SetHighlight(PlaceableDefinition definition, GridCoord origin, int turns, bool valid)

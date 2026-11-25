@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Supermarket.Building;
+using Supermarket.Config;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -92,6 +93,10 @@ namespace Supermarket.EditorTools
       GameObject shelfPrefab = EnsureShelfPrefab(shelf, shelfFrame);
       GameObject counterPrefab = EnsureCounterPrefab(counter, counterTop);
       GameObject plantPrefab = EnsurePlantPrefab(plantPot, plantLeaf);
+      GameObject checkoutLanePrefab = EnsureCheckoutLanePrefab(counter, counterTop);
+
+      UpgradeProfile checkoutLaneProfile = AssetDatabase.LoadAssetAtPath<UpgradeProfile>(
+        "Assets/_ScriptableObjects/Game/Upgrades/UP_CheckoutLane.asset");
 
       PlaceableDefinition shelfDefinition = EnsureDefinition(
         DataFolder + "/Def_Shelf_2x1.asset",
@@ -99,7 +104,9 @@ namespace Supermarket.EditorTools
         "Shelf 2x1",
         shelfPrefab,
         new Vector2Int(2, 1),
-        120);
+        120,
+        PlaceableArea.General,
+        null);
 
       PlaceableDefinition counterDefinition = EnsureDefinition(
         DataFolder + "/Def_Counter_2x1.asset",
@@ -107,7 +114,9 @@ namespace Supermarket.EditorTools
         "Counter 2x1",
         counterPrefab,
         new Vector2Int(2, 1),
-        200);
+        200,
+        PlaceableArea.General,
+        null);
 
       PlaceableDefinition plantDefinition = EnsureDefinition(
         DataFolder + "/Def_Plant_1x1.asset",
@@ -115,9 +124,23 @@ namespace Supermarket.EditorTools
         "Plant 1x1",
         plantPrefab,
         Vector2Int.one,
-        40);
+        40,
+        PlaceableArea.General,
+        null);
 
-      PlaceableCatalog catalog = EnsureCatalog(shelfDefinition, counterDefinition, plantDefinition);
+      // Plan: checkout lanes are 4x3 and have five upgrade levels.
+      PlaceableDefinition checkoutLaneDefinition = EnsureDefinition(
+        DataFolder + "/Def_CheckoutLane_4x3.asset",
+        "checkout_lane_4x3",
+        "Checkout Lane 4x3",
+        checkoutLanePrefab,
+        new Vector2Int(4, 3),
+        250,
+        PlaceableArea.Checkout,
+        checkoutLaneProfile);
+
+      PlaceableCatalog catalog = EnsureCatalog(
+        shelfDefinition, counterDefinition, plantDefinition, checkoutLaneDefinition);
 
       Scene scene = OpenTargetScene();
       if (!scene.IsValid())
@@ -136,23 +159,7 @@ namespace Supermarket.EditorTools
       root.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
 
       BuildGrid grid = GetOrAdd<BuildGrid>(root);
-      grid.cellSize = CellSize;
-      grid.size = new Vector2Int(16, 16);
-      grid.origin = new Vector3(-8f, 0.75f, -8f);
-
-      GameObject shopCell = GameObject.Find("ShopCell");
-      if (shopCell != null)
-      {
-        Collider shopCollider = shopCell.GetComponentInChildren<Collider>();
-        if (shopCollider != null)
-        {
-          Bounds bounds = shopCollider.bounds;
-          grid.size = new Vector2Int(
-            Mathf.Max(1, Mathf.RoundToInt(bounds.size.x / CellSize)),
-            Mathf.Max(1, Mathf.RoundToInt(bounds.size.z / CellSize)));
-          grid.origin = new Vector3(bounds.min.x, bounds.max.y, bounds.min.z);
-        }
-      }
+      EnsureBuildArea(grid);
 
       GameObject placedRoot = GetOrCreateChild(root.transform, "PlacedObjects");
       placedRoot.transform.localPosition = Vector3.zero;
@@ -212,6 +219,62 @@ namespace Supermarket.EditorTools
         "Build system setup complete.\n" +
         "Play __Scene_0 and press B. LMB places, RMB removes, R rotates, Esc cancels.\n" +
         "Layout saves to PlayerPrefs key: " + store.StorageKey);
+    }
+
+    /// <summary>
+    /// Fits the grid to the whole ShopCell floor and installs the default
+    /// non-buildable section mask. Shared with final-game setup so rerunning
+    /// either bootstrap keeps the build area in sync with the scene.
+    /// </summary>
+    public static void EnsureBuildArea(BuildGrid grid)
+    {
+      if (grid == null) return;
+
+      grid.cellSize = CellSize;
+      Bounds floor = ShopFloorBounds();
+
+      if (floor.size.x <= 0f || floor.size.z <= 0f)
+      {
+        grid.size = new Vector2Int(16, 16);
+        grid.origin = new Vector3(-8f, 0.75f, -8f);
+      }
+      else
+      {
+        grid.size = new Vector2Int(
+          Mathf.Max(1, Mathf.RoundToInt(floor.size.x / CellSize)),
+          Mathf.Max(1, Mathf.RoundToInt(floor.size.z / CellSize)));
+        grid.origin = new Vector3(floor.min.x, floor.max.y, floor.min.z);
+      }
+
+      StoreBuildZones.ApplyTo(grid);
+      EditorUtility.SetDirty(grid);
+    }
+
+    static Bounds ShopFloorBounds()
+    {
+      Bounds bounds = new Bounds();
+      bool found = false;
+
+      Collider[] colliders = UnityEngine.Object.FindObjectsByType<Collider>(
+        FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+      for (int i = 0; i < colliders.Length; i++)
+      {
+        Collider collider = colliders[i];
+        if (collider == null || !collider.gameObject.name.StartsWith("ShopCell_", StringComparison.Ordinal)) continue;
+
+        if (!found)
+        {
+          bounds = collider.bounds;
+          found = true;
+        }
+        else
+        {
+          bounds.Encapsulate(collider.bounds);
+        }
+      }
+
+      return bounds;
     }
 
     [MenuItem("Tools/Supermarket/Build System/Clear Saved Layout")]
@@ -366,6 +429,25 @@ namespace Supermarket.EditorTools
       return SavePrefab(root, path);
     }
 
+    static GameObject EnsureCheckoutLanePrefab(Material body, Material top)
+    {
+      string path = PrefabFolder + "/CheckoutLane_4x3.prefab";
+      GameObject existing = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+      if (existing != null) return existing;
+
+      GameObject root = new GameObject("CheckoutLane_4x3");
+      root.AddComponent<PlacedObject>();
+      BoxCollider box = root.AddComponent<BoxCollider>();
+      box.center = new Vector3(0f, 0.52f, 0f);
+      box.size = new Vector3(4f, 1.04f, 3f);
+
+      Cube(root.transform, "Body", new Vector3(0f, 0.45f, 0f), new Vector3(3.9f, 0.9f, 2.9f), body);
+      Cube(root.transform, "Top", new Vector3(0f, 0.95f, 0f), new Vector3(4f, 0.1f, 3f), top);
+      Cube(root.transform, "Register", new Vector3(1.35f, 1.2f, 0f), new Vector3(0.5f, 0.35f, 0.45f), top);
+
+      return SavePrefab(root, path);
+    }
+
     static GameObject EnsurePlantPrefab(Material pot, Material leaves)
     {
       string path = PrefabFolder + "/Plant_1x1.prefab";
@@ -433,7 +515,9 @@ namespace Supermarket.EditorTools
       string displayName,
       GameObject prefab,
       Vector2Int footprint,
-      int cost)
+      int cost,
+      PlaceableArea allowedArea,
+      UpgradeProfile upgradeProfile)
     {
       PlaceableDefinition definition = AssetDatabase.LoadAssetAtPath<PlaceableDefinition>(path);
       if (definition == null)
@@ -452,6 +536,9 @@ namespace Supermarket.EditorTools
         if (definition.prefab == null) definition.prefab = prefab;
         if (string.IsNullOrEmpty(definition.id)) definition.id = id;
       }
+
+      definition.allowedArea = allowedArea;
+      if (upgradeProfile != null) definition.upgradeProfile = upgradeProfile;
 
       EditorUtility.SetDirty(definition);
       return definition;

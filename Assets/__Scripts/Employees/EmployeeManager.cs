@@ -20,6 +20,8 @@ namespace Supermarket.Employees
         readonly Dictionary<EmployeeRole, int> _counts = new Dictionary<EmployeeRole, int>();
         readonly Dictionary<string, bool> _warned = new Dictionary<string, bool>();
 
+        bool _sectionsSubscribed;
+
         public event Action CountsChanged;
 
         static readonly EmployeeRole[] Roles =
@@ -31,6 +33,65 @@ namespace Supermarket.Employees
         void Awake()
         {
             for (int i = 0; i < Roles.Length; i++) _counts[Roles[i]] = 0;
+        }
+
+        void OnEnable()
+        {
+            SubscribeSections();
+        }
+
+        void Start()
+        {
+            SubscribeSections();
+            ClampCheckoutStaff(false);
+        }
+
+        void OnDisable()
+        {
+            UnsubscribeSections();
+        }
+
+        /// <summary>Binds the section source and listens for placed-lane changes.</summary>
+        public void BindSections(SectionManager manager)
+        {
+            UnsubscribeSections();
+            sections = manager;
+            SubscribeSections();
+        }
+
+        void SubscribeSections()
+        {
+            if (sections == null || _sectionsSubscribed) return;
+            sections.Changed += OnSectionsChanged;
+            _sectionsSubscribed = true;
+        }
+
+        void UnsubscribeSections()
+        {
+            if (sections == null || !_sectionsSubscribed) return;
+            sections.Changed -= OnSectionsChanged;
+            _sectionsSubscribed = false;
+        }
+
+        void OnSectionsChanged()
+        {
+            if (ClampCheckoutStaff(true)) RaiseChanged();
+        }
+
+        /// <summary>Keeps checkout staffing inside 0..placed lanes after lane removal/load.</summary>
+        public bool ClampCheckoutStaff(bool notify = true)
+        {
+            int count = Count(EmployeeRole.Checkout);
+            int max = Max(EmployeeRole.Checkout);
+            if (count <= max) return false;
+
+            _counts[EmployeeRole.Checkout] = max;
+            if (notify)
+            {
+                EvaluateStaffing(true);
+                RaiseChanged();
+            }
+            return true;
         }
 
         public int Count(EmployeeRole role)
@@ -76,12 +137,12 @@ namespace Supermarket.Employees
             }
         }
 
-        /// <summary>Checkout must have both a lane and an employee.</summary>
+        /// <summary>Checkout must have both a placed lane and an employee.</summary>
         public bool CheckoutOpen
         {
             get
             {
-                return (sections == null || sections.CheckoutLanes > 0) && Count(EmployeeRole.Checkout) > 0;
+                return Max(EmployeeRole.Checkout) > 0 && Count(EmployeeRole.Checkout) > 0;
             }
         }
 
@@ -113,7 +174,7 @@ namespace Supermarket.Employees
         public void EvaluateStaffing(bool allowRepeat)
         {
             CheckWarn("checkout", !CheckoutOpen,
-                "Checkout is closed: you need at least one checkout lane and one checkout employee.", allowRepeat);
+                "Checkout is closed: place a checkout lane and hire a checkout employee.", allowRepeat);
 
             CheckSectionWarning(StoreSectionType.Butcher, EmployeeRole.Butcher,
                 "The butcher is closed due to low staffing.", allowRepeat);
@@ -145,8 +206,11 @@ namespace Supermarket.Employees
 
         public void Restore(Dictionary<EmployeeRole, int> counts)
         {
-            if (counts == null) return;
-            foreach (KeyValuePair<EmployeeRole, int> pair in counts) _counts[pair.Key] = Mathf.Max(0, pair.Value);
+            if (counts != null)
+            {
+                foreach (KeyValuePair<EmployeeRole, int> pair in counts) _counts[pair.Key] = Mathf.Max(0, pair.Value);
+            }
+            ClampCheckoutStaff(false);
             _warned.Clear();
             RaiseChanged();
         }

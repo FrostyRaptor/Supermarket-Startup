@@ -20,6 +20,7 @@ namespace Supermarket.Building
     int Depth { get; }
 
     bool IsInside(GridCoord cell);
+    PlaceableArea AreaAt(GridCoord cell);
     Vector3 CoordToWorldCorner(GridCoord cell);
     Vector3 CoordToWorldCenter(GridCoord cell);
     GridCoord WorldToCoord(Vector3 world);

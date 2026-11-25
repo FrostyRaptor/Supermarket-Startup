@@ -82,6 +82,8 @@ namespace Supermarket.Editor
             GameObject coolerPrefab = EnsureBoxPrefab("Cooler_2x1", new Vector3(1.9f, 2f, 0.9f), frame, wood);
             GameObject freezerPrefab = EnsureBoxPrefab("Freezer_2x1", new Vector3(1.9f, 2f, 0.9f), frame, wood);
             GameObject alcoholPrefab = EnsureBoxPrefab("AlcoholShelf_1x1", new Vector3(0.9f, 1.8f, 0.9f), wood, frame);
+            GameObject checkoutLanePrefab = EnsureBoxPrefab(
+                "CheckoutLane_4x3", new Vector3(3.9f, 0.9f, 2.9f), frame, wood);
 
             PlaceableCatalog placeables = AssetDatabase.LoadAssetAtPath<PlaceableCatalog>("Assets/_ScriptableObjects/Building/PlaceableCatalog.asset");
             if (placeables == null)
@@ -93,6 +95,10 @@ namespace Supermarket.Editor
             EnsureDefinition("Def_Cooler_2x1", "cooler_2x1", "Cooler 2x1", coolerPrefab, new Vector2Int(2, 1), 260, cooler, placeables);
             EnsureDefinition("Def_Freezer_2x1", "freezer_2x1", "Freezer 2x1", freezerPrefab, new Vector2Int(2, 1), 240, freezer, placeables);
             EnsureDefinition("Def_AlcoholShelf_1x1", "alcohol_shelf_1x1", "Alcohol Shelf 1x1", alcoholPrefab, new Vector2Int(1, 1), 220, alcoholShelf, placeables);
+            EnsureDefinition(
+                "Def_CheckoutLane_4x3", "checkout_lane_4x3", "Checkout Lane 4x3",
+                checkoutLanePrefab, new Vector2Int(4, 3), sectionConfig.checkoutLaneCost,
+                lane, placeables, PlaceableArea.Checkout);
             EditorUtility.SetDirty(placeables);
 
             EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
@@ -113,6 +119,9 @@ namespace Supermarket.Editor
                 Debug.LogError("Build system not found in the scene. Run the Build System setup first.");
                 return;
             }
+
+            // Keep the full-store build area and section mask in sync with the floor.
+            Supermarket.EditorTools.BuildSystemSetup.EnsureBuildArea(grid);
 
             GameObject host = GameObject.Find("GameSystems") ?? new GameObject("GameSystems");
             SimpleWallet oldWallet = FindScene<SimpleWallet>();
@@ -147,6 +156,7 @@ namespace Supermarket.Editor
             SetObj(sections, "config", sectionConfig);
             SetObj(sections, "economy", economy);
             SetObj(sections, "notices", notices);
+            SetObj(sections, "_buildGrid", grid);
             SetObj(employeeManager, "config", employeeConfig);
             SetObj(employeeManager, "sections", sections);
             SetObj(employeeManager, "notices", notices);
@@ -395,7 +405,8 @@ namespace Supermarket.Editor
         }
 
         static void EnsureDefinition(string file, string id, string displayName, GameObject prefab,
-            Vector2Int footprint, int cost, UpgradeProfile profile, PlaceableCatalog catalog)
+            Vector2Int footprint, int cost, UpgradeProfile profile, PlaceableCatalog catalog,
+            PlaceableArea allowedArea = PlaceableArea.General)
         {
             string path = "Assets/_ScriptableObjects/Building/" + file + ".asset";
             PlaceableDefinition def = EnsureAsset<PlaceableDefinition>(path);
@@ -405,6 +416,7 @@ namespace Supermarket.Editor
             def.footprint = footprint;
             def.cost = cost;
             def.category = PlaceableCategory.Furniture;
+            def.allowedArea = allowedArea;
             def.upgradeProfile = profile;
             EditorUtility.SetDirty(def);
 

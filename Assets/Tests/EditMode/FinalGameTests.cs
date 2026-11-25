@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
+using Supermarket.Building;
 using Supermarket.Config;
 using Supermarket.Core;
 using Supermarket.Customers;
@@ -15,6 +16,7 @@ namespace Supermarket.Tests
     public class FinalGameTests
     {
         GameObject _host;
+        readonly List<Object> _cleanup = new List<Object>();
 
         [SetUp]
         public void SetUp()
@@ -25,6 +27,12 @@ namespace Supermarket.Tests
         [TearDown]
         public void TearDown()
         {
+            for (int i = 0; i < _cleanup.Count; i++)
+            {
+                if (_cleanup[i] != null) Object.DestroyImmediate(_cleanup[i]);
+            }
+            _cleanup.Clear();
+
             Object.DestroyImmediate(_host);
         }
 
@@ -111,6 +119,59 @@ namespace Supermarket.Tests
             Assert.AreEqual(2, employees.Max(EmployeeRole.Checkout));
             Assert.IsTrue(employees.TryHire(EmployeeRole.Checkout));
             Assert.AreEqual(2, employees.Count(EmployeeRole.Checkout));
+        }
+
+        [Test]
+        public void PlacedCheckoutLanes_SetCheckoutEmployeeCap()
+        {
+            GameObject gridHost = new GameObject("Test Build Grid");
+            _cleanup.Add(gridHost);
+            BuildGrid grid = gridHost.AddComponent<BuildGrid>();
+            grid.size = new Vector2Int(96, 256);
+            grid.cellSize = 1f;
+            grid.origin = new Vector3(-8f, 0.75f, -8f);
+            StoreBuildZones.ApplyTo(grid);
+
+            GameObject prefab = new GameObject("Test Lane Prefab");
+            _cleanup.Add(prefab);
+            prefab.AddComponent<PlacedObject>();
+            PlaceableDefinition lane = ScriptableObject.CreateInstance<PlaceableDefinition>();
+            _cleanup.Add(lane);
+            lane.id = "test_checkout_lane";
+            lane.prefab = prefab;
+            lane.footprint = new Vector2Int(4, 3);
+            lane.allowedArea = PlaceableArea.Checkout;
+
+            SectionManager sections = _host.AddComponent<SectionManager>();
+            sections.config = ScriptableObject.CreateInstance<SectionConfig>();
+            sections.Restore(null, 0, 1);
+            sections.buildGrid = grid;
+
+            EmployeeManager employees = _host.AddComponent<EmployeeManager>();
+            employees.config = ScriptableObject.CreateInstance<EmployeeConfig>();
+            employees.BindSections(sections);
+            employees.Restore(null);
+
+            Assert.AreEqual(0, employees.Max(EmployeeRole.Checkout));
+            Assert.IsFalse(employees.TryHire(EmployeeRole.Checkout));
+
+            PlacedObject first = grid.Place(lane, grid.WorldToCoord(new Vector3(-7.5f, 0.75f, 60f)), 0);
+            Assert.IsNotNull(first);
+            Assert.AreEqual(1, sections.CheckoutLanes);
+            Assert.AreEqual(1, employees.Max(EmployeeRole.Checkout));
+            Assert.IsTrue(employees.TryHire(EmployeeRole.Checkout));
+            Assert.IsFalse(employees.TryHire(EmployeeRole.Checkout));
+
+            PlacedObject second = grid.Place(lane, grid.WorldToCoord(new Vector3(-7.5f, 0.75f, 70f)), 0);
+            Assert.IsNotNull(second);
+            Assert.AreEqual(2, employees.Max(EmployeeRole.Checkout));
+            Assert.IsTrue(employees.TryHire(EmployeeRole.Checkout));
+            Assert.AreEqual(2, employees.Count(EmployeeRole.Checkout));
+
+            Assert.IsTrue(grid.Remove(first));
+            Assert.AreEqual(1, sections.CheckoutLanes);
+            Assert.AreEqual(1, employees.Max(EmployeeRole.Checkout));
+            Assert.AreEqual(1, employees.Count(EmployeeRole.Checkout), "Removing a lane removes the excess checkout hire.");
         }
 
         [Test]

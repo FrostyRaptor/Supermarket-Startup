@@ -87,12 +87,21 @@ namespace Supermarket.UI
             EnsureEventSystem();
             BuildUI();
             if (notices != null) notices.NoticeRaised += OnNotice;
+            if (sections != null) sections.Changed += OnStateChangedUI;
+            if (employees != null) employees.CountsChanged += OnStateChangedUI;
             RefreshStatus();
         }
 
         void OnDestroy()
         {
             if (notices != null) notices.NoticeRaised -= OnNotice;
+            if (sections != null) sections.Changed -= OnStateChangedUI;
+            if (employees != null) employees.CountsChanged -= OnStateChangedUI;
+        }
+
+        void OnStateChangedUI()
+        {
+            RefreshPanel();
         }
 
         void Update()
@@ -343,13 +352,10 @@ namespace Supermarket.UI
 
             if (sections != null)
             {
-                Label(_modalContent, "Expand", "Checkout lanes: " + sections.CheckoutLanes + " / " + sections.MaxCheckoutLanes +
-                    "     Loading zones: " + sections.LoadingZones + " / " + sections.MaxLoadingZones, 18,
+                Label(_modalContent, "Expand", "Checkout lanes placed: " + sections.CheckoutLanes +
+                    " (build mode B)     Loading zones: " + sections.LoadingZones + " / " + sections.MaxLoadingZones, 18,
                     TextAnchor.MiddleLeft, Light, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, y), new Vector2(0f, 44f), FontStyle.Normal);
                 y -= 48f;
-                Row(y, "Add checkout lane  $" + (sections == null ? 0 : 250),
-                    delegate { sections.TryExpandCheckout(); RefreshPanel(); }, null, "Buy", "+");
-                y -= 62f;
                 Row(y, "Add loading zone  $" + (sections == null ? 0 : 300),
                     delegate { sections.TryExpandLoadingZone(); RefreshPanel(); }, null, "Buy", "+");
                 y -= 70f;

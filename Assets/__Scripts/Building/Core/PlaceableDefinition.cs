@@ -9,6 +9,13 @@ namespace Supermarket.Building
     Decor
   }
 
+  /// <summary>Store area whose cells accept this placeable.</summary>
+  public enum PlaceableArea
+  {
+    General,
+    Checkout
+  }
+
   [CreateAssetMenu(menuName = "Supermarket/Building/Placeable Definition", fileName = "Def_Placeable")]
   public class PlaceableDefinition : ScriptableObject
   {
@@ -24,6 +31,8 @@ namespace Supermarket.Building
 
     [Header("Build Rules")]
     public int cost;
+    [Tooltip("Only cells of this area accept this placeable. Checkout lanes use Checkout.")]
+    public PlaceableArea allowedArea = PlaceableArea.General;
     public bool rotatable = true;
 
     [Header("UI")]

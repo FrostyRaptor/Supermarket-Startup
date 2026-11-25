@@ -5,6 +5,8 @@ namespace Supermarket.Building
     Valid,
     InvalidDefinition,
     OutOfBounds,
+    BlockedArea,
+    WrongSection,
     Occupied,
     InsufficientFunds
   }

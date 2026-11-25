@@ -62,6 +62,10 @@ namespace Supermarket.Core
             if (license == null) license = FindFirstObjectByType<LiquorLicense>();
             if (grid == null) grid = FindFirstObjectByType<BuildGrid>();
             if (save == null) save = FindFirstObjectByType<GameSave>();
+
+            // Checkout staffing and sales capacity follow the placed lanes.
+            if (sections != null) sections.buildGrid = grid;
+            if (employees != null) employees.BindSections(sections);
         }
 
         void Start()
@@ -81,6 +85,8 @@ namespace Supermarket.Core
             }
             if (sections != null) sections.Changed += OnStateChanged;
             if (employees != null) employees.CountsChanged += OnStateChanged;
+
+            if (employees != null) employees.ClampCheckoutStaff(false);
 
             if (save == null || !save.Load())
             {

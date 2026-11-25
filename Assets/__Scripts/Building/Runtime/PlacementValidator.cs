@@ -44,7 +44,13 @@ namespace Supermarket.Building
       for (int i = 0; i < cellBuffer.Count; i++)
       {
         GridCoord cell = origin + cellBuffer[i];
-        if (!grid.IsInside(cell)) return PlacementResult.OutOfBounds;
+        if (!grid.IsInside(cell))
+        {
+          // Distinguish a walled store section from a point outside the plot.
+          bool withinPlot = cell.X >= 0 && cell.Z >= 0 && cell.X < grid.Width && cell.Z < grid.Depth;
+          return withinPlot ? PlacementResult.BlockedArea : PlacementResult.OutOfBounds;
+        }
+        if (grid.AreaAt(cell) != definition.allowedArea) return PlacementResult.WrongSection;
         if (grid.GetOccupant(cell) != null) return PlacementResult.Occupied;
       }
 

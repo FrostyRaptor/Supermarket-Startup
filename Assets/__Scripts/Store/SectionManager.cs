@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Supermarket.Building;
 using Supermarket.Config;
 using Supermarket.Core;
 using GameWallet = Supermarket.Economy.Economy;
@@ -17,15 +18,50 @@ namespace Supermarket.Store
         public GameWallet economy;
         public NotificationCenter notices;
 
+        [Header("Build System")]
+        [SerializeField] BuildGrid _buildGrid;
+
         readonly Dictionary<StoreSectionType, bool> _unlocked = new Dictionary<StoreSectionType, bool>();
         readonly List<StoreSection> _sections = new List<StoreSection>();
+        readonly List<PlacedObject> _placedScratch = new List<PlacedObject>();
 
         int _checkoutLanes = 1;
         int _loadingZones = 1;
+        bool _gridHooked;
 
         public event Action Changed;
 
-        public int CheckoutLanes { get { return _checkoutLanes; } }
+        /// <summary>Grid that owns the placed checkout lanes. Legacy count is used when absent.</summary>
+        public BuildGrid buildGrid
+        {
+            get { return _buildGrid; }
+            set
+            {
+                if (_buildGrid == value) return;
+                UnhookGrid();
+                _buildGrid = value;
+                HookGrid();
+                RaiseChanged();
+            }
+        }
+
+        /// <summary>Count of checkout lanes actually placed in the checkout section.</summary>
+        public int CheckoutLanes
+        {
+            get
+            {
+                if (_buildGrid == null) return _checkoutLanes;
+
+                _buildGrid.GetAllPlacedObjects(_placedScratch);
+                int lanes = 0;
+                for (int i = 0; i < _placedScratch.Count; i++)
+                {
+                    if (IsCheckoutLane(_placedScratch[i])) lanes++;
+                }
+                return lanes;
+            }
+        }
+
         public int LoadingZones { get { return _loadingZones; } }
         public int MaxCheckoutLanes { get { return config == null ? 4 : Mathf.Max(1, config.maxCheckoutLanes); } }
         public int MaxLoadingZones { get { return config == null ? 3 : Mathf.Max(1, config.maxLoadingZones); } }
@@ -34,6 +70,49 @@ namespace Supermarket.Store
         void Awake()
         {
             ResetToDefaults();
+        }
+
+        void OnEnable()
+        {
+            HookGrid();
+        }
+
+        void OnDisable()
+        {
+            UnhookGrid();
+        }
+
+        void HookGrid()
+        {
+            if (_gridHooked || _buildGrid == null) return;
+            _buildGrid.ObjectPlaced += OnBuildObjectChanged;
+            _buildGrid.ObjectRemoved += OnBuildObjectChanged;
+            _gridHooked = true;
+        }
+
+        void UnhookGrid()
+        {
+            if (!_gridHooked || _buildGrid == null) return;
+            _buildGrid.ObjectPlaced -= OnBuildObjectChanged;
+            _buildGrid.ObjectRemoved -= OnBuildObjectChanged;
+            _gridHooked = false;
+        }
+
+        void OnBuildObjectChanged(PlacedObject placed)
+        {
+            if (IsCheckoutLane(placed)) RaiseChanged();
+        }
+
+        static bool IsCheckoutLane(PlacedObject placed)
+        {
+            return placed != null && placed.Definition != null &&
+                   placed.Definition.allowedArea == PlaceableArea.Checkout;
+        }
+
+        /// <summary>Notifies listeners that the placed lane count changed (e.g. after a layout load).</summary>
+        public void NotifyLaneCountChanged()
+        {
+            RaiseChanged();
         }
 
         void SetDefaultUnlocks()
@@ -107,6 +186,9 @@ namespace Supermarket.Store
 
         public bool TryExpandCheckout()
         {
+            // With the build grid wired, lanes are placed in build mode instead of
+            // being purchased as an abstract counter.
+            if (_buildGrid != null) return false;
             if (_checkoutLanes >= MaxCheckoutLanes) return false;
             int cost = config == null ? 0 : config.checkoutLaneCost;
             if (economy != null && !economy.CanAfford(cost))

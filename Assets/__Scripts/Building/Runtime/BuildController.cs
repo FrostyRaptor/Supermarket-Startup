@@ -260,7 +260,7 @@ namespace Supermarket.Building
     {
       if (result != PlacementResult.Valid)
       {
-        Notify(ReasonText(result));
+        Notify(ReasonText(result, _selectedDefinition));
         return false;
       }
 
@@ -334,12 +334,18 @@ namespace Supermarket.Building
       if (StateChanged != null) StateChanged();
     }
 
-    static string ReasonText(PlacementResult result)
+    static string ReasonText(PlacementResult result, PlaceableDefinition definition)
     {
       switch (result)
       {
         case PlacementResult.OutOfBounds:
           return "Outside the plot";
+        case PlacementResult.BlockedArea:
+          return "That section is not buildable";
+        case PlacementResult.WrongSection:
+          return definition != null && definition.allowedArea == PlaceableArea.Checkout
+            ? "Checkout lanes can only be placed in the checkout section"
+            : "Only checkout lanes can be placed in the checkout section";
         case PlacementResult.Occupied:
           return "That space is already taken";
         case PlacementResult.InsufficientFunds:

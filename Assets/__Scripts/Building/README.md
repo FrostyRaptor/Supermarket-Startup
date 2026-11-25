@@ -21,9 +21,33 @@ Run `Tools > Supermarket > Build System > Setup Scene`. This creates the materia
 placeholder prefabs, definitions and catalog, then wires a `BuildSystem` object into
 `Assets/_Scenes/__Scene_0.unity`. It is safe to rerun; existing assets are left alone.
 
-The grid is fitted to the `ShopCell` collider bounds (16 x 16 cells, 1 m each) with
-the surface at the top of the cell (y = 0.75). Without a `ShopCell`, it falls back to
-origin `(-8, 0.75, -8)`.
+The grid is fitted to the combined bounds of every `ShopCell_*` floor tile (1 m
+cells) with the surface at the top of the floor (y = 0.75). On the stock scene
+that is 96 x 256 cells starting at `(-8, 0.75, -8)`. Without floor tiles it falls
+back to a 16 x 16 plot.
+
+## Buildable area
+
+The plot is the whole store floor. `BuildGrid.exclusionZones` holds world-space
+XZ rectangles, populated from `StoreBuildZones.CreateDefaultZones()` by
+scene/final-game setup:
+
+- bakery: columns 0-1, rows 0-1 (blocked)
+- butcher: columns 4-5, rows 0-3 (blocked)
+- deli: column 2, rows 3-4 (blocked)
+- storage: columns 4-5 behind the butcher, plus column 3 at the back (blocked)
+- checkout: column 0, rows 4-11 (checkout lanes only)
+- alcohol: column 0, rows 12-15 (blocked)
+
+Everything else is the general build area. `IsInside` returns false for blocked
+cells; `PlacementValidator` reports `BlockedArea` or `WrongSection` so the HUD
+explains why a placement failed. Checkout lanes are `4 x 3` cells and have
+`allowedArea = Checkout`; every other placeable defaults to `General`, so only
+lanes can enter checkout and lanes cannot be placed anywhere else. Each placed
+lane allows one checkout employee; removing a lane also removes any checkout
+hire above the new cap. The overlay only draws grid lines beside cells that are
+inside the plot. To change the layout, edit the zones on `BuildSystem/BuildGrid`
+or update `StoreBuildZones` and rerun setup.
 
 ## Adding a placeable
 
@@ -33,7 +57,9 @@ origin `(-8, 0.75, -8)`.
 4. Use one collider on the root; child visual meshes do not need colliders.
 5. Create a `PlaceableDefinition` (`Create > Supermarket > Building > Placeable Definition`):
    - `id` is used by save files and must stay stable.
-   - `footprint` is (cells along X, cells along Z).
+   - `footprint` is (cells along X, cells along Z). Checkout lanes are `4 x 3`.
+   - `allowedArea` is `General` for shelves/coolers/freezers/decor and `Checkout`
+     for checkout lanes; the validator enforces it for every footprint cell.
    - `cost` is charged through `SimpleWallet` if assigned.
 6. Add the definition to `Assets/_ScriptableObjects/Building/PlaceableCatalog.asset`.
 
@@ -41,7 +67,8 @@ The hotbar is generated from the catalog at runtime, so no UI wiring is required
 
 ## Grid conventions
 
-- `GridCoord { X, Z }`, `(0,0)` is the plot's minimum corner.
+- `GridCoord { X, Z }`, `(0,0)` is the plot's minimum corner. For the stock scene,
+  cell `(x, z)` covers world `[-8+x, -8+z]` to `[-7+x, -7+z]`.
 - A footprint is anchored at its minimum corner; a 2x1 at `(4,4)` occupies `(4,4)` and `(5,4)`.
 - Rotation is clockwise viewed from above and matches `Quaternion.Euler(0, turns * 90, 0)`.
 - Hovering uses a math plane at the floor height, not a physics raycast; the cursor works
@@ -84,9 +111,9 @@ change at runtime (the grid keeps the old size and logs a warning).
 ## Tests
 
 EditMode tests live in `Assets/Tests/EditMode/` and cover coordinate conversion, footprint
-rotation, occupancy/overlap, bounds rejection, removal, pivot rotation, persistence
-(round-trip, corrupt data, version mismatch, unknown IDs), economy ordering, and hotbar
-index mapping. Run them from `Window > General > Test Runner > EditMode`.
+rotation, occupancy/overlap, bounds rejection, buildable-area exclusions, removal, pivot
+rotation, persistence (round-trip, corrupt data, version mismatch, unknown IDs), economy
+ordering, and hotbar index mapping. Run them from `Window > General > Test Runner > EditMode`.
 
 ## Layout
 

@@ -21,6 +21,11 @@ namespace Supermarket.Building
     [Tooltip("World position of cell (0,0)'s minimum corner, on the floor surface.")]
     public Vector3 origin = new Vector3(-8f, 0.75f, -8f);
 
+    [Header("Buildable Area")]
+    [Tooltip("World-space XZ rectangles inside the plot. Walled sections are blocked; " +
+             "checkout accepts only checkout lanes.")]
+    public List<BuildExclusionZone> exclusionZones = new List<BuildExclusionZone>();
+
     [Header("Hierarchy")]
     public Transform placedRoot;
 
@@ -148,9 +153,37 @@ namespace Supermarket.Building
       return cell.Z * Width + cell.X;
     }
 
+    /// <summary>True when the cell lies inside a walled/non-buildable section.</summary>
+    public bool IsExcluded(GridCoord cell)
+    {
+      Vector3 center = CoordToWorldCenter(cell);
+      for (int i = 0; i < exclusionZones.Count; i++)
+      {
+        BuildExclusionZone zone = exclusionZones[i];
+        if (zone != null && zone.IsBlocked && zone.ContainsWorld(center)) return true;
+      }
+      return false;
+    }
+
+    /// <summary>True when the cell is inside the plot and outside all blocked sections.</summary>
     public bool IsInside(GridCoord cell)
     {
-      return cell.X >= 0 && cell.Z >= 0 && cell.X < Width && cell.Z < Depth;
+      return cell.X >= 0 && cell.Z >= 0 && cell.X < Width && cell.Z < Depth && !IsExcluded(cell);
+    }
+
+    /// <summary>Area that accepts placements on this cell (checkout or general).</summary>
+    public PlaceableArea AreaAt(GridCoord cell)
+    {
+      Vector3 center = CoordToWorldCenter(cell);
+      for (int i = 0; i < exclusionZones.Count; i++)
+      {
+        BuildExclusionZone zone = exclusionZones[i];
+        if (zone != null && zone.access == BuildZoneAccess.CheckoutOnly && zone.ContainsWorld(center))
+        {
+          return PlaceableArea.Checkout;
+        }
+      }
+      return PlaceableArea.General;
     }
 
     public Vector3 CoordToWorldCorner(GridCoord cell)

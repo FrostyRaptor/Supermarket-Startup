@@ -20,6 +20,13 @@ All economy, wage, demand, license, unlock and upgrade values live in the
 ScriptableObjects under `Assets/_ScriptableObjects/Game/` and can be tuned in
 the Inspector.
 
+The build grid covers the whole store floor except the walled bakery, butcher,
+deli, storage and alcohol sections. General fixtures build in the aisles;
+`4 x 3` checkout lanes can only be placed in the checkout section, and no other
+placeable can go there. Each placed lane supports one checkout employee, so
+hiring is capped by the number of lanes in the store. See
+`Assets/__Scripts/Building/README.md` for details.
+
 ## Requirements
 
 - **Unity 6 LTS** — use the editor version in `ProjectSettings/ProjectVersion.txt` (`6000.3.28f1`).
