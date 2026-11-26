@@ -235,7 +235,15 @@ namespace Supermarket.Core
         public void ResetAll()
         {
             if (clock != null) clock.Restore(1, 0f);
-            if (economy != null && config != null) economy.Restore(config.startingMoney, 0f, 0f, 0f, 0f);
+            if (economy != null)
+            {
+                if (economy.config == null && config != null) economy.config = config;
+                int startingMoney = Application.isEditor ? 10000 : 1000;
+                if (economy.config != null)
+                    startingMoney = Application.isEditor ? economy.config.editorStartingMoney : economy.config.startingMoney;
+                if (startingMoney <= 0) startingMoney = Application.isEditor ? 10000 : 1000;
+                economy.Restore(startingMoney, 0f, 0f, 0f, 0f);
+            }
             if (sections != null) sections.ResetToDefaults();
             if (employees != null)
             {

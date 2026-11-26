@@ -2500,7 +2500,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 563d4a446bcf14bd98fd875bce79fcc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Core.GameManager
-  config: {fileID: 0}
+  config: {fileID: 11400000, guid: aa3ed9a10be844017905656c932df1d3, type: 2}
   clock: {fileID: 510327176}
   economy: {fileID: 701136529}
   notices: {fileID: 510327175}
@@ -3674,8 +3674,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2d5e687683ca49c4af530492c2bbc52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Economy.Economy
-  startingBalance: 1000
-  config: {fileID: 0}
+  startingBalance: 10000
+  config: {fileID: 11400000, guid: aa3ed9a10be844017905656c932df1d3, type: 2}
 --- !u!1001 &703175563
 PrefabInstance:
   m_ObjectHideFlags: 0

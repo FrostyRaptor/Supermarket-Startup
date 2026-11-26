@@ -285,16 +285,34 @@ namespace Supermarket.Building
       return true;
     }
 
-    void TryRemove(GridCoord cell)
+    /// <summary>
+    /// Removes the occupant at <paramref name="cell"/> and refunds its cost.
+    /// Exposed for tests and future AI/tutorial drivers.
+    /// </summary>
+    public bool TryRemoveAt(GridCoord cell)
     {
       IGridOccupancy g = Grid;
-      if (g == null) return;
+      if (g == null) return false;
 
       PlacedObject occupant = g.GetOccupant(cell);
-      if (occupant == null) return;
+      if (occupant == null) return false;
 
       string label = occupant.Definition != null ? occupant.Definition.displayName : "Object";
-      if (g.Remove(occupant)) Notify(string.Format("Removed {0}", label));
+      int refund = occupant.Definition != null ? occupant.Definition.cost : 0;
+      if (g.Remove(occupant))
+      {
+        IBuildEconomy economy = Economy;
+        if (economy != null && refund > 0) economy.Add(refund);
+        Notify(string.Format("Removed {0}", label));
+        return true;
+      }
+
+      return false;
+    }
+
+    void TryRemove(GridCoord cell)
+    {
+      TryRemoveAt(cell);
     }
 
     bool TryGetHoverCell(out GridCoord cell)

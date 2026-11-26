@@ -17,7 +17,10 @@ namespace Supermarket.Config
         public int startYear = 2026;
 
         [Header("Economy")]
-        public int startingMoney = 1500;
+        [Tooltip("Starting money for new saves in player builds (WebGL).")]
+        public int startingMoney = 1000;
+        [Tooltip("Starting money when running/resetting in the Unity Editor.")]
+        public int editorStartingMoney = 10000;
 
         [Header("Demand")]
         [Tooltip("Units sold per product per day at level 1 with average staffing.")]

@@ -409,6 +409,135 @@ namespace Supermarket.EditorTools
         : "No saved layout found (key: " + key + ").");
     }
 
+    [MenuItem("Tools/Supermarket/Build System/Reset Scene To Defaults")]
+    public static void ResetSceneToDefaults()
+    {
+      if (EditorApplication.isPlayingOrWillChangePlaymode)
+      {
+        Debug.LogWarning("BuildSystemSetup: exit play mode before resetting the scene.");
+        return;
+      }
+
+      Scene scene = SceneManager.GetActiveScene();
+      if (scene.path != ScenePath)
+      {
+        scene = OpenTargetScene();
+        if (!scene.IsValid())
+        {
+          Debug.LogError("BuildSystemSetup: could not open " + ScenePath);
+          return;
+        }
+      }
+
+      // Clear persisted build layout (Editor/PlayerPrefs). WebGL build save settings are unchanged.
+      BuildLayoutStore store = UnityEngine.Object.FindFirstObjectByType<BuildLayoutStore>();
+      if (store != null)
+      {
+        string key = store.StorageKey;
+        if (PlayerPrefs.HasKey(key)) PlayerPrefs.DeleteKey(key);
+        if (PlayerPrefs.HasKey(key + ".corrupt")) PlayerPrefs.DeleteKey(key + ".corrupt");
+        string legacyPath = store.LegacyFilePath;
+        if (File.Exists(legacyPath)) File.Delete(legacyPath);
+      }
+      else
+      {
+        string defaultKey = "supermarket.build-layout." + BuildLayoutStore.DefaultFileName;
+        if (PlayerPrefs.HasKey(defaultKey)) PlayerPrefs.DeleteKey(defaultKey);
+        if (PlayerPrefs.HasKey(defaultKey + ".corrupt")) PlayerPrefs.DeleteKey(defaultKey + ".corrupt");
+      }
+
+      // Clear persisted game state (Editor/PlayerPrefs). WebGL build save settings are unchanged.
+      if (PlayerPrefs.HasKey(Supermarket.Core.GameSave.SaveKey)) PlayerPrefs.DeleteKey(Supermarket.Core.GameSave.SaveKey);
+      PlayerPrefs.Save();
+
+      Supermarket.Core.GameManager game = UnityEngine.Object.FindFirstObjectByType<Supermarket.Core.GameManager>();
+      Supermarket.Economy.Economy economy = UnityEngine.Object.FindFirstObjectByType<Supermarket.Economy.Economy>();
+      GameConfig config = ResolveGameConfig(economy);
+
+      if (game != null)
+      {
+        if (game.config == null && config != null)
+        {
+          SerializedObject gameSo = new SerializedObject(game);
+          SerializedProperty cfgProp = gameSo.FindProperty("config");
+          if (cfgProp != null) cfgProp.objectReferenceValue = config;
+          gameSo.ApplyModifiedPropertiesWithoutUndo();
+        }
+        game.ResetAll();
+        EditorUtility.SetDirty(game);
+      }
+
+      // Ensure economy is reset even if GameManager didn't handle it as expected.
+      if (economy == null) economy = UnityEngine.Object.FindFirstObjectByType<Supermarket.Economy.Economy>();
+      if (economy != null)
+      {
+        if (economy.config == null && config != null) economy.config = config;
+        int startingMoney = 10000;
+        if (config != null && config.editorStartingMoney > 0) startingMoney = config.editorStartingMoney;
+        economy.Restore(startingMoney, 0f, 0f, 0f, 0f);
+
+        SerializedObject ecoSo = new SerializedObject(economy);
+        SerializedProperty sb = ecoSo.FindProperty("startingBalance");
+        if (sb != null) sb.intValue = startingMoney;
+        ecoSo.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(economy);
+      }
+
+      if (game == null)
+      {
+        BuildGrid grid = UnityEngine.Object.FindFirstObjectByType<BuildGrid>();
+        if (grid != null)
+        {
+          grid.ClearAll();
+          EditorUtility.SetDirty(grid);
+        }
+      }
+
+      Supermarket.Core.GameSave save = UnityEngine.Object.FindFirstObjectByType<Supermarket.Core.GameSave>();
+      if (save != null)
+      {
+        // ResetAll() may have written a fresh default save; remove it so Editor starts clean.
+        if (PlayerPrefs.HasKey(Supermarket.Core.GameSave.SaveKey)) PlayerPrefs.DeleteKey(Supermarket.Core.GameSave.SaveKey);
+        PlayerPrefs.Save();
+        EditorUtility.SetDirty(save);
+      }
+
+      SimpleWallet[] wallets = UnityEngine.Object.FindObjectsByType<SimpleWallet>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+      for (int i = 0; i < wallets.Length; i++)
+      {
+        SimpleWallet w = wallets[i];
+        if (w == null) continue;
+        if (w is Supermarket.Economy.Economy) continue; // already handled
+        SerializedObject wSo = new SerializedObject(w);
+        SerializedProperty sb = wSo.FindProperty("startingBalance");
+        if (sb != null) sb.intValue = 10000;
+        wSo.ApplyModifiedPropertiesWithoutUndo();
+        w.Initialize(10000);
+        EditorUtility.SetDirty(w);
+      }
+
+      EditorSceneManager.MarkSceneDirty(scene);
+      EditorSceneManager.SaveScene(scene);
+      Debug.Log("Scene reset to defaults: bank amount and store layout cleared.");
+    }
+
+    static GameConfig ResolveGameConfig(Supermarket.Economy.Economy economy)
+    {
+      if (economy != null && economy.config != null) return economy.config;
+
+      Supermarket.Core.GameManager game = UnityEngine.Object.FindFirstObjectByType<Supermarket.Core.GameManager>();
+      if (game != null && game.config != null) return game.config;
+
+      string[] guids = AssetDatabase.FindAssets("t:Supermarket.Config.GameConfig");
+      if (guids != null && guids.Length > 0)
+      {
+        string path = AssetDatabase.GUIDToAssetPath(guids[0]);
+        return AssetDatabase.LoadAssetAtPath<GameConfig>(path);
+      }
+
+      return null;
+    }
+
     [MenuItem("Tools/Supermarket/Build System/Open Saved Layout Folder")]
     public static void OpenSavedLayoutFolder()
     {

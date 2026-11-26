@@ -8,5 +8,8 @@ namespace Supermarket.Building
     bool CanAfford(int amount);
 
     bool TrySpend(int amount);
+
+    /// <summary>Adds funds to the balance (for refunds/rewards).</summary>
+    void Add(int amount);
   }
 }

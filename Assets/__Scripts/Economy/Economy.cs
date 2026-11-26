@@ -24,8 +24,16 @@ namespace Supermarket.Economy
         protected override void Awake()
         {
             base.Awake();
-            if (config != null) Initialize(config.startingMoney);
+            Initialize(GetStartingMoney());
             RaiseStats();
+        }
+
+        public int GetStartingMoney()
+        {
+            if (config == null) return Application.isEditor ? 10000 : 1000;
+            int amount = Application.isEditor ? config.editorStartingMoney : config.startingMoney;
+            if (amount <= 0) amount = Application.isEditor ? 10000 : 1000;
+            return amount;
         }
 
         public void RecordSale(float amount)

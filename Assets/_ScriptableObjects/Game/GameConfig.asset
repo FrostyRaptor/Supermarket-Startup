@@ -16,7 +16,8 @@ MonoBehaviour:
   startMonth: 1
   startDay: 1
   startYear: 2026
-  startingMoney: 1500
+  startingMoney: 1000
+  editorStartingMoney: 10000
   baseDailyDemand: 18
   demandGrowthPerDay: 0.35
   suggestionFactor: 1.12

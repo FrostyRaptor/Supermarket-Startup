@@ -100,5 +100,28 @@ namespace Supermarket.Tests
       Assert.IsFalse(_wallet.CanAfford(1001));
       Assert.AreEqual(1000, _wallet.Balance);
     }
+
+    [Test]
+    public void Remove_RefundsBuildingCost()
+    {
+      Assert.IsTrue(_controller.TryPlaceSelected(new GridCoord(1, 1)));
+      Assert.AreEqual(900, _wallet.Balance);
+
+      Assert.IsTrue(_controller.TryRemoveAt(new GridCoord(1, 1)));
+
+      Assert.IsNull(_grid.GetOccupant(new GridCoord(1, 1)));
+      Assert.AreEqual(1000, _wallet.Balance);
+    }
+
+    [Test]
+    public void Remove_WithoutEconomy_StillRemoves()
+    {
+      _controller.economySource = null;
+      Assert.IsTrue(_controller.TryPlaceSelected(new GridCoord(1, 1)));
+      Assert.IsNotNull(_grid.GetOccupant(new GridCoord(1, 1)));
+
+      Assert.IsTrue(_controller.TryRemoveAt(new GridCoord(1, 1)));
+      Assert.IsNull(_grid.GetOccupant(new GridCoord(1, 1)));
+    }
   }
 }
