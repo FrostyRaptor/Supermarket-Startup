@@ -65,6 +65,22 @@ namespace Supermarket.Tests
         }
 
         [Test]
+        public void Clock_ReportsInGameTimeFromDayProgress()
+        {
+            GameClock clock = _host.AddComponent<GameClock>();
+            clock.config = Config();
+
+            clock.Restore(1, 0f);
+            Assert.AreEqual("12:00 AM", clock.TimeText);
+
+            clock.Restore(1, 75f);
+            Assert.AreEqual("3:00 AM", clock.TimeText);
+
+            clock.Restore(1, 300f);
+            Assert.AreEqual("12:00 PM", clock.TimeText);
+        }
+
+        [Test]
         public void Economy_TracksSalesWagesAndNetRate()
         {
             GameWallet wallet = _host.AddComponent<GameWallet>();
@@ -78,6 +94,7 @@ namespace Supermarket.Tests
             Assert.AreEqual(200f, wallet.LastDayIncome, 0.01f);
             Assert.AreEqual(50f, wallet.LastDayWages, 0.01f);
             Assert.AreEqual(15f, wallet.NetPerRealMinute, 0.01f);
+            Assert.AreEqual(900f, wallet.NetPerRealHour, 0.01f);
         }
 
         [Test]

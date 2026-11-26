@@ -35,16 +35,21 @@ namespace Supermarket.UI
         public LiquorLicense license;
         public ProductCatalog catalog;
 
-        enum PanelKind { None, Employees, Orders, Sections, Upgrades }
+        enum PanelKind { None, Employees, Upgrades, Orders }
+
+        const int FontSizeBoost = 15;
 
         static readonly Color Dark = new Color(0.06f, 0.09f, 0.13f, 0.94f);
         static readonly Color Light = new Color(0.91f, 0.94f, 0.97f, 1f);
         static readonly Color Accent = new Color(0.32f, 0.68f, 0.42f, 1f);
         static readonly Color Warn = new Color(0.92f, 0.49f, 0.28f, 1f);
+        static readonly Color Disabled = new Color(0.19f, 0.21f, 0.25f, 1f);
+        static readonly Color DisabledText = new Color(0.55f, 0.58f, 0.62f, 1f);
 
         GameObject _root;
         Text _dayText;
-        Text _rateText;
+        int _lastDay = -1;
+        int _lastMinuteOfDay = -1;
         PanelKind _openPanel;
         GameObject _modal;
         RectTransform _modalContent;
@@ -134,30 +139,18 @@ namespace Supermarket.UI
             scaler.referenceResolution = new Vector2(1920f, 1080f);
             scaler.matchWidthOrHeight = 0.5f;
 
-            // Top-left day / rate tab.
-            GameObject status = Panel("Day & Rate", _root.transform, new Vector2(0f, 1f), new Vector2(0f, 1f),
-                new Vector2(0f, 1f), new Vector2(24f, -24f), new Vector2(320f, 96f));
+            // Top-left day / time tab.
+            GameObject status = Panel("Day & Time", _root.transform, new Vector2(0f, 1f), new Vector2(0f, 1f),
+                new Vector2(0f, 1f), new Vector2(24f, -24f), new Vector2(420f, 72f));
             _dayText = Label(status.transform, "Day", "", 24, TextAnchor.MiddleLeft, Light,
                 Vector2.zero, Vector2.one, new Vector2(0f, 0f), new Vector2(-2f, -2f), FontStyle.Bold);
-            _rateText = Label(status.transform, "Rate", "", 17, TextAnchor.MiddleLeft, Accent,
-                Vector2.zero, Vector2.one, new Vector2(0f, 0f), new Vector2(-2f, -2f), FontStyle.Normal);
             RectTransform dayRect = _dayText.rectTransform;
-            dayRect.offsetMin = new Vector2(14f, 46f);
-            dayRect.offsetMax = new Vector2(-10f, -2f);
-            RectTransform rateRect = _rateText.rectTransform;
-            rateRect.offsetMin = new Vector2(14f, 8f);
-            rateRect.offsetMax = new Vector2(-10f, -42f);
+            dayRect.offsetMin = new Vector2(14f, 4f);
+            dayRect.offsetMax = new Vector2(-10f, -4f);
 
-            // Bottom-left employees button.
-            MakeHudButton("Employees", _root.transform, new Vector2(0f, 0f), new Vector2(24f, 24f),
-                OpenEmployees, new Color(0.18f, 0.36f, 0.58f, 1f));
-
-            // Above the build button: order manager plus section/upgrade access.
-            MakeHudButton("Orders", _root.transform, new Vector2(1f, 0f), new Vector2(-24f, 96f), OpenOrders, Accent);
-            MakeHudButton("Sections", _root.transform, new Vector2(1f, 0f), new Vector2(-214f, 96f), OpenSections,
-                new Color(0.42f, 0.35f, 0.62f, 1f));
-            MakeHudButton("Upgrades", _root.transform, new Vector2(1f, 0f), new Vector2(-404f, 96f), OpenUpgrades,
-                new Color(0.55f, 0.42f, 0.24f, 1f));
+            // Bottom-left store manager button; all management panels live in its tabs.
+            MakeHudButton("Store", _root.transform, new Vector2(0f, 0f), new Vector2(24f, 24f),
+                OpenStore, new Color(0.18f, 0.36f, 0.58f, 1f));
 
             // Toast area, under the top-right currency counter.
             GameObject toasts = new GameObject("Notices", typeof(RectTransform));
@@ -166,27 +159,25 @@ namespace Supermarket.UI
             _toastContainer.anchorMin = new Vector2(1f, 1f);
             _toastContainer.anchorMax = new Vector2(1f, 1f);
             _toastContainer.pivot = new Vector2(1f, 1f);
-            _toastContainer.anchoredPosition = new Vector2(-24f, -100f);
-            _toastContainer.sizeDelta = new Vector2(420f, 520f);
+            _toastContainer.anchoredPosition = new Vector2(-24f, -184f);
+            _toastContainer.sizeDelta = new Vector2(480f, 520f);
         }
 
         void RefreshStatus()
         {
             if (_dayText == null) return;
-            string date = clock == null ? "01/01/2026" : clock.DateText;
-            int day = clock == null ? 1 : clock.Day;
-            _dayText.text = "Day " + day + "   " + date;
 
-            if (economy == null) { _rateText.text = "Net: $0.0 / real min"; return; }
-            float rate = economy.NetPerRealMinute;
-            _rateText.text = "Net: " + (rate >= 0f ? "+" : "-") + "$" + Mathf.Abs(rate).ToString("0.0") + " / real min";
-            _rateText.color = rate >= 0f ? Accent : Warn;
+            int day = clock == null ? 1 : clock.Day;
+            int minuteOfDay = Mathf.FloorToInt((clock == null ? 0f : clock.DayProgress) * 24f * 60f);
+            if (day == _lastDay && minuteOfDay == _lastMinuteOfDay) return;
+
+            _lastDay = day;
+            _lastMinuteOfDay = minuteOfDay;
+            string time = clock == null ? "12:00 AM" : clock.TimeText;
+            _dayText.text = "Day " + day + "   " + time;
         }
 
-        void OpenEmployees() { ShowPanel(PanelKind.Employees); }
-        void OpenOrders() { ShowPanel(PanelKind.Orders); }
-        void OpenSections() { ShowPanel(PanelKind.Sections); }
-        void OpenUpgrades() { ShowPanel(PanelKind.Upgrades); }
+        void OpenStore() { ShowPanel(PanelKind.Employees); }
 
         void ShowPanel(PanelKind kind)
         {
@@ -205,40 +196,54 @@ namespace Supermarket.UI
             dim.color = new Color(0f, 0f, 0f, 0.62f);
 
             GameObject window = Panel("Window", _modal.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(980f, 700f));
+                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(1120f, 860f));
             GameObject header = Panel("Header", window.transform, new Vector2(0f, 1f), new Vector2(1f, 1f),
-                new Vector2(0.5f, 1f), new Vector2(0f, -34f), new Vector2(0f, 68f));
-            Label(header.transform, "Title", Title(kind), 26, TextAnchor.MiddleLeft, Light,
+                new Vector2(0.5f, 1f), new Vector2(0f, -42f), new Vector2(0f, 84f));
+            Label(header.transform, "Title", "Store Manager", 26, TextAnchor.MiddleLeft, Light,
                 Vector2.zero, Vector2.one, Vector2.zero, new Vector2(-100f, 0f), FontStyle.Bold);
-            MakeWindowButton("X", header.transform, new Vector2(1f, 0.5f), new Vector2(-34f, 0f), ClosePanel, new Vector2(52f, 44f), Warn);
+            MakeWindowButton("X", header.transform, new Vector2(1f, 0.5f), new Vector2(-42f, 0f), ClosePanel, new Vector2(64f, 58f), Warn);
 
-            GameObject body = new GameObject("Body", typeof(RectTransform));
-            body.transform.SetParent(window.transform, false);
-            _modalContent = body.GetComponent<RectTransform>();
-            _modalContent.anchorMin = new Vector2(0f, 0f);
+            GameObject tabs = Panel("Tabs", window.transform, new Vector2(0f, 1f), new Vector2(1f, 1f),
+                new Vector2(0.5f, 1f), new Vector2(0f, -84f), new Vector2(0f, 58f));
+            MakeWindowButton("Employees", tabs.transform, new Vector2(0.5f, 0.5f), new Vector2(-350f, 0f),
+                delegate { ShowPanel(PanelKind.Employees); }, new Vector2(320f, 48f),
+                kind == PanelKind.Employees ? Accent : new Color(0.24f, 0.28f, 0.34f, 1f));
+            MakeWindowButton("Upgrades", tabs.transform, new Vector2(0.5f, 0.5f), Vector2.zero,
+                delegate { ShowPanel(PanelKind.Upgrades); }, new Vector2(320f, 48f),
+                kind == PanelKind.Upgrades ? Accent : new Color(0.24f, 0.28f, 0.34f, 1f));
+            MakeWindowButton("Orders", tabs.transform, new Vector2(0.5f, 0.5f), new Vector2(350f, 0f),
+                delegate { ShowPanel(PanelKind.Orders); }, new Vector2(320f, 48f),
+                kind == PanelKind.Orders ? Accent : new Color(0.24f, 0.28f, 0.34f, 1f));
+
+            GameObject body = Panel("Body", window.transform, Vector2.zero, Vector2.one,
+                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
+            RectTransform bodyRect = body.GetComponent<RectTransform>();
+            bodyRect.offsetMin = new Vector2(20f, 20f);
+            bodyRect.offsetMax = new Vector2(-20f, -150f);
+            body.GetComponent<Image>().color = new Color(0.03f, 0.05f, 0.08f, 0.55f);
+            body.AddComponent<RectMask2D>();
+
+            ScrollRect scroll = body.AddComponent<ScrollRect>();
+            scroll.horizontal = false;
+            scroll.vertical = true;
+            scroll.viewport = bodyRect;
+            _modalContent = new GameObject("Content", typeof(RectTransform)).GetComponent<RectTransform>();
+            _modalContent.SetParent(body.transform, false);
+            _modalContent.anchorMin = new Vector2(0f, 1f);
             _modalContent.anchorMax = new Vector2(1f, 1f);
-            _modalContent.offsetMin = new Vector2(20f, 20f);
-            _modalContent.offsetMax = new Vector2(-20f, -80f);
+            _modalContent.pivot = new Vector2(0.5f, 1f);
+            _modalContent.anchoredPosition = Vector2.zero;
+            _modalContent.sizeDelta = new Vector2(0f, 3200f);
+            scroll.content = _modalContent;
 
             switch (kind)
             {
                 case PanelKind.Employees: BuildEmployeesPanel(); break;
-                case PanelKind.Orders: BuildOrdersPanel(); break;
-                case PanelKind.Sections: BuildSectionsPanel(); break;
                 case PanelKind.Upgrades: BuildUpgradesPanel(); break;
+                case PanelKind.Orders: BuildOrdersPanel(); break;
             }
-        }
 
-        string Title(PanelKind kind)
-        {
-            switch (kind)
-            {
-                case PanelKind.Employees: return "Employees";
-                case PanelKind.Orders: return "Order Manager";
-                case PanelKind.Sections: return "Sections & License";
-                case PanelKind.Upgrades: return "Upgrades";
-                default: return "";
-            }
+            scroll.verticalNormalizedPosition = 1f;
         }
 
         void ClosePanel()
@@ -251,12 +256,21 @@ namespace Supermarket.UI
         void BuildEmployeesPanel()
         {
             if (employees == null) return;
-            EmployeeRole[] roles =
-            {
-                EmployeeRole.Checkout, EmployeeRole.Butcher, EmployeeRole.Bakery,
-                EmployeeRole.Deli, EmployeeRole.Unloader, EmployeeRole.Stocker
-            };
             float y = -10f;
+            AddEmployeeGroup(ref y, "Checkout & Sales", EmployeeRole.Checkout);
+            AddEmployeeGroup(ref y, "Storage", EmployeeRole.Unloader, EmployeeRole.Stocker);
+            AddEmployeeGroup(ref y, "Butcher", EmployeeRole.Butcher);
+            AddEmployeeGroup(ref y, "Bakery", EmployeeRole.Bakery);
+            AddEmployeeGroup(ref y, "Deli", EmployeeRole.Deli);
+
+            Label(_modalContent, "Wages", "Daily wages: $" + employees.DailyWages, 22, TextAnchor.MiddleLeft, Accent,
+                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, y - 28f), new Vector2(0f, 56f), FontStyle.Bold);
+        }
+
+        void AddEmployeeGroup(ref float y, string heading, params EmployeeRole[] roles)
+        {
+            Heading(ref y, heading);
+            if (roles == null) return;
             for (int i = 0; i < roles.Length; i++)
             {
                 EmployeeRole role = roles[i];
@@ -266,10 +280,8 @@ namespace Supermarket.UI
                     delegate { employees.TryFire(role); RefreshPanel(); },
                     delegate { employees.TryHire(role); RefreshPanel(); },
                     "-", "+");
-                y -= 76f;
+                y -= 86f;
             }
-            Label(_modalContent, "Wages", "Daily wages: $" + employees.DailyWages, 22, TextAnchor.MiddleLeft, Accent,
-                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, y), new Vector2(0f, 44f), FontStyle.Bold);
         }
 
         int Wage(EmployeeRole role)
@@ -296,8 +308,8 @@ namespace Supermarket.UI
                 GameObject inputObj = new GameObject("Qty", typeof(RectTransform), typeof(Image), typeof(InputField));
                 inputObj.transform.SetParent(row.transform, false);
                 RectTransform inputRect = inputObj.GetComponent<RectTransform>();
-                inputRect.anchorMin = new Vector2(0.64f, 0.18f);
-                inputRect.anchorMax = new Vector2(0.78f, 0.82f);
+                inputRect.anchorMin = new Vector2(0.64f, 0.10f);
+                inputRect.anchorMax = new Vector2(0.78f, 0.90f);
                 inputRect.offsetMin = Vector2.zero;
                 inputRect.offsetMax = Vector2.zero;
                 inputObj.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.94f);
@@ -310,7 +322,7 @@ namespace Supermarket.UI
 
                 string id = p.id;
                 MakeWindowButton("Order", row.transform, new Vector2(0.92f, 0.5f), Vector2.zero,
-                    delegate { PlaceOrder(id); }, new Vector2(130f, 44f), Accent);
+                    delegate { PlaceOrder(id); }, new Vector2(150f, 54f), Accent);
                 y -= 70f;
             }
         }
@@ -323,9 +335,9 @@ namespace Supermarket.UI
             if (qty > 0 && orders.TryPlaceOrder(productId, qty)) RefreshPanel();
         }
 
-        void BuildSectionsPanel()
+        void BuildSectionAccess(ref float y)
         {
-            float y = -8f;
+            Heading(ref y, "Section Access");
             StoreSectionType[] lockable =
             {
                 StoreSectionType.Butcher, StoreSectionType.Bakery, StoreSectionType.Deli,
@@ -334,18 +346,23 @@ namespace Supermarket.UI
             for (int i = 0; i < lockable.Length; i++)
             {
                 StoreSectionType type = lockable[i];
-                bool unlocked = sections != null && sections.IsUnlocked(type);
-                string label = type + (unlocked ? "  - unlocked" : "  - unlock $" + (sections == null ? 0 : sections.UnlockCost(type)));
+                bool unlocked = IsSectionUnlocked(type);
+                string label = type + (unlocked ? "  - owned" : "  - unlock $" + (sections == null ? 0 : sections.UnlockCost(type)));
                 GameObject row = Panel("Section " + type, _modalContent, new Vector2(0f, 1f), new Vector2(1f, 1f),
                     new Vector2(0.5f, 1f), new Vector2(0f, y), new Vector2(0f, 58f));
-                Label(row.transform, "Label", label, 18, TextAnchor.MiddleLeft, Light,
+                Label(row.transform, "Label", label, 18, TextAnchor.MiddleLeft, unlocked ? Light : DisabledText,
                     Vector2.zero, new Vector2(0.7f, 1f), Vector2.zero, Vector2.zero, FontStyle.Normal);
-                if (!unlocked)
+                if (unlocked)
+                {
+                    MakeWindowButton("Owned", row.transform, new Vector2(0.88f, 0.5f), Vector2.zero, null,
+                        new Vector2(160f, 52f), Disabled, false);
+                }
+                else
                 {
                     StoreSectionType captured = type;
                     MakeWindowButton("Unlock", row.transform, new Vector2(0.88f, 0.5f), Vector2.zero,
                         delegate { if (progression != null) progression.TryUnlockSection(captured); RefreshPanel(); },
-                        new Vector2(150f, 42f), Accent);
+                        new Vector2(160f, 52f), Accent);
                 }
                 y -= 66f;
             }
@@ -354,83 +371,162 @@ namespace Supermarket.UI
             {
                 Label(_modalContent, "Expand", "Checkout lanes placed: " + sections.CheckoutLanes +
                     " (build mode B)     Loading zones: " + sections.LoadingZones + " / " + sections.MaxLoadingZones, 18,
-                    TextAnchor.MiddleLeft, Light, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, y), new Vector2(0f, 44f), FontStyle.Normal);
-                y -= 48f;
-                Row(y, "Add loading zone  $" + (sections == null ? 0 : 300),
+                    TextAnchor.MiddleLeft, Light, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, y - 26f), new Vector2(0f, 52f), FontStyle.Normal);
+                y -= 56f;
+                Row(y, "Add loading zone  $300",
                     delegate { sections.TryExpandLoadingZone(); RefreshPanel(); }, null, "Buy", "+");
-                y -= 70f;
+                y -= 86f;
             }
 
             if (license != null)
             {
                 Label(_modalContent, "License", "Liquor license: " + license.StatusText, 20, TextAnchor.MiddleLeft,
                     license.IsApproved ? Accent : Warn, new Vector2(0f, 1f), new Vector2(1f, 1f),
-                    new Vector2(0f, y), new Vector2(0f, 44f), FontStyle.Bold);
-                y -= 48f;
+                    new Vector2(0f, y - 26f), new Vector2(0f, 52f), FontStyle.Bold);
+                y -= 56f;
                 if (license.CanFileStage1)
                 {
                     Row(y, "File background check  $" + license.Stage1Fee,
                         delegate { license.TryFileStage1(economy, clock == null ? 1 : clock.BusinessDay); RefreshPanel(); },
                         null, "File", "+");
-                    y -= 62f;
+                    y -= 86f;
                 }
                 if (license.CanFileStage2)
                 {
                     Row(y, "File final paperwork  $" + license.Stage2Fee,
                         delegate { license.TryFileStage2(economy, clock == null ? 1 : clock.BusinessDay); RefreshPanel(); },
                         null, "File", "+");
+                    y -= 86f;
                 }
             }
         }
 
         void BuildUpgradesPanel()
         {
-            if (upgrades == null) return;
-            float y = -8f;
-            AddUpgradeRow(ref y, "Checkout lane 1", UpgradeSystem.CheckoutKeyPrefix + "0", upgrades.LaneProfile);
-            AddUpgradeRow(ref y, "Loading zone 1", UpgradeSystem.LoadingZoneKeyPrefix + "0", upgrades.LoadingZoneProfile);
-            AddUpgradeRow(ref y, "Storage shelf 1", UpgradeSystem.StorageShelfKeyPrefix + "0", upgrades.StorageShelfProfile);
-            AddUpgradeRow(ref y, "Butcher equipment", UpgradeSystem.ButcherKey, upgrades.ButcherProfile);
-            AddUpgradeRow(ref y, "Bakery equipment", UpgradeSystem.BakeryKey, upgrades.BakeryProfile);
-            AddUpgradeRow(ref y, "Deli equipment", UpgradeSystem.DeliKey, upgrades.DeliProfile);
+            float y = -10f;
+            BuildSectionAccess(ref y);
+            Heading(ref y, "Upgrade Paths");
 
+            SectionHeading(ref y, "Checkout & Sales", StoreSectionType.Checkout);
+            AddUpgradeRow(ref y, "Checkout lane 1", UpgradeSystem.CheckoutKeyPrefix + "0",
+                upgrades == null ? null : upgrades.LaneProfile, StoreSectionType.Checkout);
+
+            SectionHeading(ref y, "Storage", StoreSectionType.Storage);
+            AddUpgradeRow(ref y, "Loading zone 1", UpgradeSystem.LoadingZoneKeyPrefix + "0",
+                upgrades == null ? null : upgrades.LoadingZoneProfile, StoreSectionType.Storage);
+            AddUpgradeRow(ref y, "Storage shelf 1", UpgradeSystem.StorageShelfKeyPrefix + "0",
+                upgrades == null ? null : upgrades.StorageShelfProfile, StoreSectionType.Storage);
+
+            SectionHeading(ref y, "Butcher", StoreSectionType.Butcher);
+            AddUpgradeRow(ref y, "Butcher equipment", UpgradeSystem.ButcherKey,
+                upgrades == null ? null : upgrades.ButcherProfile, StoreSectionType.Butcher);
+
+            SectionHeading(ref y, "Bakery", StoreSectionType.Bakery);
+            AddUpgradeRow(ref y, "Bakery equipment", UpgradeSystem.BakeryKey,
+                upgrades == null ? null : upgrades.BakeryProfile, StoreSectionType.Bakery);
+
+            SectionHeading(ref y, "Deli", StoreSectionType.Deli);
+            AddUpgradeRow(ref y, "Deli equipment", UpgradeSystem.DeliKey,
+                upgrades == null ? null : upgrades.DeliProfile, StoreSectionType.Deli);
+
+            SectionHeading(ref y, "General Shelves & Fixtures", StoreSectionType.General);
+            AddFixtureGroup(ref y, false);
+
+            SectionHeading(ref y, "Alcohol Shelves", StoreSectionType.Alcohol);
+            AddFixtureGroup(ref y, true);
+        }
+
+        void AddFixtureGroup(ref float y, bool alcohol)
+        {
+            if (upgrades == null) return;
+            bool found = false;
             foreach (KeyValuePair<string, UpgradeableFixture> pair in upgrades.Fixtures)
             {
                 UpgradeableFixture f = pair.Value;
-                if (f == null) continue;
+                if (f == null || IsAlcoholFixture(f) != alcohol) continue;
+                found = true;
                 string key = pair.Key;
                 string name = f.Placed != null && f.Placed.Definition != null ? f.Placed.Definition.displayName : "Fixture";
-                AddFixtureRow(ref y, name, key, f);
+                AddFixtureRow(ref y, name, key, f, alcohol ? StoreSectionType.Alcohol : StoreSectionType.General);
+            }
+            if (!found)
+            {
+                Label(_modalContent, "Empty", alcohol ? "No alcohol shelves placed yet." : "No shelves or fixtures placed yet.",
+                    18, TextAnchor.MiddleLeft, DisabledText, new Vector2(0f, 1f), new Vector2(1f, 1f),
+                    new Vector2(0f, y - 26f), new Vector2(0f, 52f), FontStyle.Normal);
+                y -= 56f;
             }
         }
 
-        void AddUpgradeRow(ref float y, string label, string key, UpgradeProfile profile)
+        void AddUpgradeRow(ref float y, string label, string key, UpgradeProfile profile, StoreSectionType section)
         {
-            int level = upgrades.GetLevel(key);
+            bool locked = !IsSectionUnlocked(section);
+            int level = upgrades == null ? 1 : upgrades.GetLevel(key);
             string cost = profile == null ? "-" : "$" + profile.CostForNextLevel(level);
-            Row(y, label + "   Lv " + level + " / 5   next " + cost,
-                delegate { upgrades.TryUpgradeFixed(key, profile, label); RefreshPanel(); }, null, "Upgrade", "+");
-            y -= 64f;
+            string detail = locked ? "  - section locked" : "   Lv " + level + " / 5   next " + cost;
+            Row(y, label + detail,
+                locked ? (Action)null : delegate { upgrades.TryUpgradeFixed(key, profile, label); RefreshPanel(); },
+                null, locked ? "Locked" : "Upgrade", "+", locked);
+            y -= 86f;
         }
 
-        void AddFixtureRow(ref float y, string label, string key, UpgradeableFixture fixture)
+        void AddFixtureRow(ref float y, string label, string key, UpgradeableFixture fixture, StoreSectionType section)
         {
+            bool locked = !IsSectionUnlocked(section);
             string cost = fixture.profile == null ? "-" : "$" + fixture.profile.CostForNextLevel(fixture.level);
-            Row(y, label + "   Lv " + fixture.level + " / 5   " + fixture.stock + "/" + fixture.Capacity + "   next " + cost,
-                delegate { fixture.TryUpgrade(economy); RefreshPanel(); }, null, "Upgrade", "+");
-            y -= 64f;
+            string detail = locked ? "  - section locked" : "   Lv " + fixture.level + " / 5   " + fixture.stock + "/" + fixture.Capacity + "   next " + cost;
+            Row(y, label + detail,
+                locked ? (Action)null : delegate { fixture.TryUpgrade(economy); RefreshPanel(); },
+                null, locked ? "Locked" : "Upgrade", "+", locked);
+            y -= 86f;
         }
 
-        void Row(float y, string label, Action left, Action right, string leftText, string rightText)
+        bool IsSectionUnlocked(StoreSectionType type)
+        {
+            return sections == null || sections.IsUnlocked(type);
+        }
+
+        static bool IsAlcoholFixture(UpgradeableFixture fixture)
+        {
+            if (fixture == null) return false;
+            string id = fixture.key;
+            if (fixture.Placed != null && fixture.Placed.Definition != null) id = fixture.Placed.Definition.id;
+            return !string.IsNullOrEmpty(id) && id.StartsWith("alcohol", StringComparison.OrdinalIgnoreCase);
+        }
+
+        void Heading(ref float y, string title)
+        {
+            Heading(ref y, title, Accent);
+        }
+
+        void Heading(ref float y, string title, Color color)
+        {
+            Label(_modalContent, "Heading", title, 20, TextAnchor.MiddleLeft, color,
+                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, y - 20f), new Vector2(0f, 40f), FontStyle.Bold);
+            y -= 42f;
+        }
+
+        void SectionHeading(ref float y, string title, StoreSectionType type)
+        {
+            bool unlocked = IsSectionUnlocked(type);
+            Heading(ref y, title + (unlocked ? "" : "  (locked)"), unlocked ? Accent : DisabledText);
+        }
+
+        void Row(float y, string label, Action left, Action right, string leftText, string rightText, bool locked = false)
         {
             GameObject row = Panel("Row", _modalContent, new Vector2(0f, 1f), new Vector2(1f, 1f),
-                new Vector2(0.5f, 1f), new Vector2(0f, y), new Vector2(0f, 58f));
-            Label(row.transform, "Label", label, 18, TextAnchor.MiddleLeft, Light,
+                new Vector2(0.5f, 1f), new Vector2(0f, y), new Vector2(0f, 78f));
+            Label(row.transform, "Label", label, 18, TextAnchor.MiddleLeft, locked ? DisabledText : Light,
                 Vector2.zero, new Vector2(0.5f, 1f), Vector2.zero, Vector2.zero, FontStyle.Normal);
             if (left != null)
-                MakeWindowButton(leftText, row.transform, new Vector2(0.68f, 0.5f), Vector2.zero, left, new Vector2(120f, 42f), new Color(0.3f, 0.33f, 0.38f, 1f));
+                MakeWindowButton(leftText, row.transform, new Vector2(0.68f, 0.5f), Vector2.zero, left,
+                    new Vector2(140f, 54f), locked ? Disabled : new Color(0.3f, 0.33f, 0.38f, 1f), !locked);
+            else if (locked)
+                MakeWindowButton(leftText, row.transform, new Vector2(0.68f, 0.5f), Vector2.zero, null,
+                    new Vector2(140f, 54f), Disabled, false);
             if (right != null)
-                MakeWindowButton(rightText, row.transform, new Vector2(0.88f, 0.5f), Vector2.zero, right, new Vector2(120f, 42f), Accent);
+                MakeWindowButton(rightText, row.transform, new Vector2(0.88f, 0.5f), Vector2.zero, right,
+                    new Vector2(140f, 54f), Accent, !locked);
         }
 
         void RefreshPanel()
@@ -443,7 +539,7 @@ namespace Supermarket.UI
         {
             if (_toastContainer == null) return;
             GameObject toast = Panel("Toast", _toastContainer, new Vector2(0f, 1f), new Vector2(1f, 1f),
-                new Vector2(0.5f, 1f), new Vector2(0f, -_toasts.Count * 68f), new Vector2(0f, 60f));
+                new Vector2(0.5f, 1f), new Vector2(0f, -_toasts.Count * 76f), new Vector2(0f, 72f));
             Image image = toast.GetComponent<Image>();
             image.color = kind == NoticeKind.Warning ? new Color(0.45f, 0.18f, 0.12f, 0.96f)
                 : kind == NoticeKind.Success ? new Color(0.10f, 0.32f, 0.18f, 0.96f) : Dark;
@@ -484,7 +580,7 @@ namespace Supermarket.UI
             Text text = go.GetComponent<Text>();
             text.font = _font;
             text.text = content;
-            text.fontSize = size;
+            text.fontSize = size + FontSizeBoost;
             text.fontStyle = style;
             text.alignment = anchor;
             text.color = color;
@@ -496,37 +592,41 @@ namespace Supermarket.UI
 
         void MakeHudButton(string label, Transform parent, Vector2 anchor, Vector2 position, Action onClick, Color color)
         {
-            MakeButton(label, parent, anchor, position, onClick, new Vector2(170f, 58f), color);
+            MakeButton(label, parent, anchor, position, onClick, new Vector2(190f, 72f), color);
         }
 
-        void MakeWindowButton(string label, Transform parent, Vector2 anchor, Vector2 position, Action onClick,
-            Vector2 size, Color color)
+        Button MakeWindowButton(string label, Transform parent, Vector2 anchor, Vector2 position, Action onClick,
+            Vector2 size, Color color, bool enabled = true)
         {
-            MakeButton(label, parent, anchor, position, onClick, size, color);
+            return MakeButton(label, parent, anchor, position, onClick, size, color, enabled);
         }
 
-        void MakeButton(string label, Transform parent, Vector2 anchor, Vector2 position, Action onClick,
-            Vector2 size, Color color)
+        Button MakeButton(string label, Transform parent, Vector2 anchor, Vector2 position, Action onClick,
+            Vector2 size, Color color, bool enabled = true)
         {
             GameObject go = new GameObject(label + " Button", typeof(RectTransform), typeof(Image), typeof(Button));
             go.transform.SetParent(parent, false);
             RectTransform rect = go.GetComponent<RectTransform>();
             rect.anchorMin = anchor;
             rect.anchorMax = anchor;
-            rect.pivot = anchor.x > 0.5f ? new Vector2(1f, 0f) : anchor.x < 0.5f ? new Vector2(0f, 0f) : new Vector2(0.5f, 0.5f);
+            rect.pivot = new Vector2(
+                anchor.x > 0.5f ? 1f : anchor.x < 0.5f ? 0f : 0.5f,
+                anchor.y > 0.5f ? 1f : anchor.y < 0.5f ? 0f : 0.5f);
             rect.anchoredPosition = position;
             rect.sizeDelta = size;
             Image image = go.GetComponent<Image>();
-            image.color = color;
+            image.color = enabled ? color : Disabled;
             Button button = go.GetComponent<Button>();
+            button.interactable = enabled;
             ColorBlock block = button.colors;
             block.normalColor = Color.white;
             block.highlightedColor = new Color(1.15f, 1.15f, 1.15f, 1f);
             block.pressedColor = new Color(0.8f, 0.8f, 0.8f, 1f);
             button.colors = block;
-            button.onClick.AddListener(delegate { onClick(); });
-            Label(go.transform, "Label", label, 19, TextAnchor.MiddleCenter, Color.white,
-                Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, FontStyle.Bold);
+            if (onClick != null) button.onClick.AddListener(delegate { onClick(); });
+            Label(go.transform, "Label", label, 19, TextAnchor.MiddleCenter,
+                enabled ? Color.white : DisabledText, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, FontStyle.Bold);
+            return button;
         }
 
         static void EnsureEventSystem()

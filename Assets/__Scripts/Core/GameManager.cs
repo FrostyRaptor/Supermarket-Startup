@@ -50,6 +50,7 @@ namespace Supermarket.Core
         void Resolve()
         {
             if (clock == null) clock = FindFirstObjectByType<GameClock>();
+            if (clock != null && clock.config == null) clock.config = config;
             if (economy == null) economy = FindFirstObjectByType<Economy.Economy>();
             if (notices == null) notices = FindFirstObjectByType<NotificationCenter>();
             if (sections == null) sections = FindFirstObjectByType<SectionManager>();

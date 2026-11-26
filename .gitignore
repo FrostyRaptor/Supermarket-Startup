@@ -39,6 +39,7 @@ AGENTS.md
 SUMMARY.md
 EXPANSION.md
 FINALGAMEPLAN.md
+StoreManagerUI.md
 
 # Gradle cache directory
 .gradle/

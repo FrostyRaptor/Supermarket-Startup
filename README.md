@@ -58,11 +58,13 @@ See `Assets/__Scripts/Building/README.md` for the layout save format.
 
 ## HUD
 
-- Top-left: business day, date (`MM/DD/YYYY`) and net dollars per real minute.
-- Top-right: current balance.
-- Bottom-left: employee hiring/firing panel.
+- Top-left: business day and in-game time of day (`h:mm AM/PM`) on one line.
+- Top-right: current balance with net dollars per real hour underneath.
+- Bottom-left: **Store** button opening a tabbed manager:
+  - **Employees**: hiring/firing grouped by store section.
+  - **Upgrades**: section purchases/license plus each section's upgrade paths; locked sections show grayed-out upgrades.
+  - **Orders**: current order manager.
 - Bottom-right: build mode button.
-- Above build mode: order manager, sections/license and upgrade panels.
 
 ## Tests
 

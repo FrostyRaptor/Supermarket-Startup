@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
+using GameWallet = Supermarket.Economy.Economy;
 
 namespace Supermarket.Building
 {
@@ -17,6 +18,7 @@ namespace Supermarket.Building
     public BuildController controller;
     public SimpleWallet wallet;
 
+    const int FontSizeBoost = 15;
     const float MessageDuration = 2f;
     const float BorderThickness = 2f;
     const float HudMargin = 24f;
@@ -26,6 +28,7 @@ namespace Supermarket.Building
     static readonly Color HoverColor = new Color(0.24f, 0.27f, 0.33f, 1f);
 
     static readonly Color CurrencyOutlineColor = new Color(0.29f, 0.86f, 0.44f, 1f);
+    static readonly Color NegativeRateColor = new Color(0.92f, 0.49f, 0.28f, 1f);
     static readonly Color BillPaperColor = new Color(0.84f, 0.94f, 0.79f, 1f);
     static readonly Color BillInsetColor = new Color(0.22f, 0.56f, 0.33f, 0.55f);
     static readonly Color BillMarkColor = new Color(1f, 1f, 1f, 0.95f);
@@ -46,6 +49,8 @@ namespace Supermarket.Building
     Text _messageText;
     CanvasGroup _messageGroup;
     Text _currencyText;
+    Text _rateText;
+    GameWallet _economy;
     float _messageExpiry;
     int _lastBalance;
     bool _hasBalance;
@@ -55,18 +60,23 @@ namespace Supermarket.Building
       if (controller == null) controller = FindFirstObjectByType<BuildController>();
       if (catalog == null && controller != null) catalog = controller.catalog;
       if (wallet == null) wallet = FindFirstObjectByType<SimpleWallet>();
+      if (_economy == null) _economy = wallet as GameWallet;
+      if (_economy == null) _economy = FindFirstObjectByType<GameWallet>();
       if (controller != null) controller.StateChanged += Refresh;
       if (wallet != null) wallet.BalanceChanged += OnBalanceChanged;
+      if (_economy != null) _economy.StatsChanged += OnStatsChanged;
 
       BuildUI();
       Refresh();
       UpdateCurrency();
+      RefreshRate();
     }
 
     void OnDestroy()
     {
       if (controller != null) controller.StateChanged -= Refresh;
       if (wallet != null) wallet.BalanceChanged -= OnBalanceChanged;
+      if (_economy != null) _economy.StatsChanged -= OnStatsChanged;
     }
 
     void Update()
@@ -94,6 +104,21 @@ namespace Supermarket.Building
       if (_hasBalance && balance == _lastBalance) return;
 
       OnBalanceChanged(balance);
+    }
+
+    void OnStatsChanged()
+    {
+      RefreshRate();
+    }
+
+    void RefreshRate()
+    {
+      if (_rateText == null) return;
+
+      float rate = _economy == null ? 0f : _economy.NetPerRealHour;
+      string value = "Net: " + (rate >= 0f ? "+" : "-") + "$" + Mathf.Abs(rate).ToString("0.0") + " / hour";
+      if (_rateText.text != value) _rateText.text = value;
+      _rateText.color = rate >= 0f ? CurrencyOutlineColor : NegativeRateColor;
     }
 
     public void ShowMessage(string message)
@@ -177,7 +202,7 @@ namespace Supermarket.Building
       panelRect.anchorMax = new Vector2(1f, 0f);
       panelRect.pivot = new Vector2(0.5f, 0f);
       panelRect.anchoredPosition = new Vector2(0f, 16f);
-      panelRect.sizeDelta = new Vector2(-32f, 214f);
+      panelRect.sizeDelta = new Vector2(-32f, 370f);
 
       Image panelImage = panel.GetComponent<Image>();
       panelImage.color = new Color(0.055f, 0.065f, 0.085f, 0.94f);
@@ -191,7 +216,7 @@ namespace Supermarket.Building
       layout.childForceExpandWidth = true;
       layout.childForceExpandHeight = false;
 
-      GameObject header = CreateRow(panel.transform, 22f, 10f);
+      GameObject header = CreateRow(panel.transform, 38f, 10f);
       Text hints = CreateText(
         header.transform,
         "Hints",
@@ -200,18 +225,18 @@ namespace Supermarket.Building
         TextAnchor.MiddleLeft);
       LayoutElement hintsLayout = hints.gameObject.AddComponent<LayoutElement>();
       hintsLayout.flexibleWidth = 1f;
-      hintsLayout.preferredHeight = 22f;
+      hintsLayout.preferredHeight = 38f;
 
-      GameObject messageRow = CreateRow(panel.transform, 22f, 0f);
+      GameObject messageRow = CreateRow(panel.transform, 38f, 0f);
       _messageText = CreateText(messageRow.transform, "Message", "", 18, TextAnchor.MiddleCenter);
       LayoutElement messageLayout = _messageText.gameObject.AddComponent<LayoutElement>();
       messageLayout.flexibleWidth = 1f;
-      messageLayout.preferredHeight = 22f;
+      messageLayout.preferredHeight = 38f;
 
       _messageGroup = _messageText.gameObject.AddComponent<CanvasGroup>();
       _messageGroup.alpha = 0f;
 
-      GameObject items = CreateRow(panel.transform, 92f, 8f);
+      GameObject items = CreateRow(panel.transform, 160f, 8f);
       if (catalog != null)
       {
         for (int i = 0; i < catalog.Definitions.Count; i++)
@@ -221,18 +246,18 @@ namespace Supermarket.Building
 
           int index = i;
           string label = string.Format("{0}. {1}\n${2}", i + 1, definition.displayName, definition.cost);
-          Button button = CreateButton(items.transform, "Item_" + definition.id, label, 18, 170f, 92f);
+          Button button = CreateButton(items.transform, "Item_" + definition.id, label, 18, 170f, 160f);
           button.onClick.AddListener(() => SelectFromUI(index));
           _itemButtons.Add(button);
           _buttonCatalogIndex.Add(index);
         }
       }
 
-      GameObject actions = CreateRow(panel.transform, 34f, 8f);
-      Button rotateButton = CreateButton(actions.transform, "Rotate", "Rotate (R)", 17, 130f, 34f);
+      GameObject actions = CreateRow(panel.transform, 50f, 8f);
+      Button rotateButton = CreateButton(actions.transform, "Rotate", "Rotate (R)", 17, 170f, 50f);
       rotateButton.onClick.AddListener(RotateFromUI);
 
-      Button closeButton = CreateButton(actions.transform, "Close", "Close (B)", 17, 130f, 34f);
+      Button closeButton = CreateButton(actions.transform, "Close", "Close (B)", 17, 170f, 50f);
       closeButton.onClick.AddListener(CloseFromUI);
 
       return panel;
@@ -248,7 +273,7 @@ namespace Supermarket.Building
       rootRect.anchorMax = new Vector2(1f, 1f);
       rootRect.pivot = new Vector2(1f, 1f);
       rootRect.anchoredPosition = new Vector2(-HudMargin, -HudMargin);
-      rootRect.sizeDelta = new Vector2(230f, 62f);
+      rootRect.sizeDelta = new Vector2(312f, 140f);
 
       AddOutline(root.transform, CurrencyOutlineColor);
 
@@ -256,11 +281,11 @@ namespace Supermarket.Building
       billObject.transform.SetParent(root.transform, false);
 
       RectTransform billRect = billObject.GetComponent<RectTransform>();
-      billRect.anchorMin = new Vector2(0f, 0.5f);
-      billRect.anchorMax = new Vector2(0f, 0.5f);
-      billRect.pivot = new Vector2(0f, 0.5f);
-      billRect.anchoredPosition = new Vector2(10f, 0f);
-      billRect.sizeDelta = new Vector2(54f, 32f);
+      billRect.anchorMin = new Vector2(0f, 1f);
+      billRect.anchorMax = new Vector2(0f, 1f);
+      billRect.pivot = new Vector2(0f, 1f);
+      billRect.anchoredPosition = new Vector2(6f, -8f);
+      billRect.sizeDelta = new Vector2(54f, 42f);
 
       Image billImage = billObject.GetComponent<Image>();
       ApplyRoundedSprite(billImage);
@@ -298,12 +323,22 @@ namespace Supermarket.Building
       RectTransform amountRect = _currencyText.rectTransform;
       amountRect.anchorMin = Vector2.zero;
       amountRect.anchorMax = Vector2.one;
-      amountRect.offsetMin = Vector2.zero;
-      amountRect.offsetMax = Vector2.zero;
+      amountRect.offsetMin = new Vector2(66f, 80f);
+      amountRect.offsetMax = new Vector2(-4f, -6f);
 
       Shadow amountShadow = _currencyText.gameObject.AddComponent<Shadow>();
       amountShadow.effectColor = new Color(0f, 0f, 0f, 0.65f);
       amountShadow.effectDistance = new Vector2(1f, -1f);
+
+      _rateText = CreateText(root.transform, "Net Rate", "", 15, TextAnchor.MiddleCenter);
+      _rateText.fontStyle = FontStyle.Bold;
+      _rateText.color = CurrencyOutlineColor;
+
+      RectTransform rateRect = _rateText.rectTransform;
+      rateRect.anchorMin = Vector2.zero;
+      rateRect.anchorMax = Vector2.one;
+      rateRect.offsetMin = new Vector2(8f, 6f);
+      rateRect.offsetMax = new Vector2(-8f, -68f);
     }
 
     void CreateBuildModeButton(Transform parent)
@@ -320,7 +355,7 @@ namespace Supermarket.Building
       rect.anchorMax = new Vector2(1f, 0f);
       rect.pivot = new Vector2(1f, 0f);
       rect.anchoredPosition = new Vector2(-HudMargin, HudMargin);
-      rect.sizeDelta = new Vector2(180f, 64f);
+      rect.sizeDelta = new Vector2(200f, 78f);
 
       Image image = go.GetComponent<Image>();
       ApplyRoundedSprite(image);
@@ -495,12 +530,12 @@ namespace Supermarket.Building
 
       Text text = go.GetComponent<Text>();
       text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-      text.fontSize = fontSize;
+      text.fontSize = fontSize + FontSizeBoost;
       text.text = content;
       text.alignment = anchor;
       text.color = Color.white;
       text.raycastTarget = false;
-      text.horizontalOverflow = HorizontalWrapMode.Overflow;
+      text.horizontalOverflow = HorizontalWrapMode.Wrap;
       text.verticalOverflow = VerticalWrapMode.Overflow;
 
       return text;

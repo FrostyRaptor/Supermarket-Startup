@@ -8,7 +8,7 @@ namespace Supermarket.Economy
     /// <summary>
     /// Real wallet for the tycoon game. Extends SimpleWallet so all existing
     /// build-system plumbing keeps working, and adds sales/wage tracking plus
-    /// the "$ per real minute" figure shown in the top-left HUD tab.
+    /// the net hourly rate shown beneath the balance in the HUD.
     /// </summary>
     public class Economy : SimpleWallet
     {
@@ -72,6 +72,9 @@ namespace Supermarket.Economy
                 return (LastDayIncome - LastDayWages) / minutes;
             }
         }
+
+        /// <summary>Net dollars per real hour, as shown beneath the balance in the HUD.</summary>
+        public float NetPerRealHour { get { return NetPerRealMinute * 60f; } }
 
         public void Restore(int money, float income, float wages, float totalIncome, float totalWages)
         {

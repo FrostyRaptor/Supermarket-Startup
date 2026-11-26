@@ -36,6 +36,18 @@ namespace Supermarket.Core
 
         public string DateText { get { return CurrentDate.ToString("MM/dd/yyyy"); } }
 
+        /// <summary>In-game time of day: progress through the day mapped onto 24 hours.</summary>
+        public string TimeText
+        {
+            get
+            {
+                int minutes = Mathf.FloorToInt(DayProgress * 24f * 60f) % (24 * 60);
+                int hour24 = minutes / 60;
+                int hour12 = hour24 % 12 == 0 ? 12 : hour24 % 12;
+                return hour12 + ":" + (minutes % 60).ToString("00") + (hour24 < 12 ? " AM" : " PM");
+            }
+        }
+
         void Update()
         {
             if (config == null) return;
