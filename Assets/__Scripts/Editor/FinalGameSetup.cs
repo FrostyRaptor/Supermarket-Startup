@@ -122,6 +122,7 @@ namespace Supermarket.Editor
 
             // Keep the full-store build area and section mask in sync with the floor.
             Supermarket.EditorTools.BuildSystemSetup.EnsureBuildArea(grid);
+            Supermarket.EditorTools.BuildSystemSetup.EnsureSectionVisuals();
 
             GameObject host = GameObject.Find("GameSystems") ?? new GameObject("GameSystems");
             SimpleWallet oldWallet = FindScene<SimpleWallet>();

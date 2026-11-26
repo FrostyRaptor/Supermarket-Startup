@@ -200,6 +200,8 @@ namespace Supermarket.EditorTools
       menu.wallet = wallet;
       controller.menu = menu;
 
+      EnsureSectionVisuals();
+
       EditorUtility.SetDirty(grid);
       EditorUtility.SetDirty(overlay);
       EditorUtility.SetDirty(ghost);
@@ -248,6 +250,97 @@ namespace Supermarket.EditorTools
 
       StoreBuildZones.ApplyTo(grid);
       EditorUtility.SetDirty(grid);
+    }
+
+    /// <summary>
+    /// Applies the build-mode section treatment: colored floor overlays plus
+    /// build-only barrier walls. Storage and deli keep their physical walls.
+    /// Safe to rerun.
+    /// </summary>
+    [MenuItem("Tools/Supermarket/Build System/Apply Section Visuals")]
+    public static void EnsureSectionVisuals()
+    {
+      if (EditorApplication.isPlayingOrWillChangePlaymode)
+      {
+        Debug.LogWarning("BuildSystemSetup: exit play mode before applying section visuals.");
+        return;
+      }
+
+      Scene scene = SceneManager.GetActiveScene();
+      if (scene.path != ScenePath)
+      {
+        scene = OpenTargetScene();
+        if (!scene.IsValid())
+        {
+          Debug.LogError("BuildSystemSetup: could not open " + ScenePath);
+          return;
+        }
+      }
+
+      BuildGrid grid = UnityEngine.Object.FindFirstObjectByType<BuildGrid>();
+      BuildController controller = UnityEngine.Object.FindFirstObjectByType<BuildController>();
+      if (grid == null || controller == null)
+      {
+        Debug.LogError("BuildSystemSetup: build grid/controller not found; cannot apply section visuals.");
+        return;
+      }
+
+      Material template = AssetDatabase.LoadAssetAtPath<Material>(MaterialFolder + "/Mat_BuildGrid.mat");
+      Material barrierMaterial = EnsureMaterial(
+        MaterialFolder + "/Mat_SectionBarrier.mat",
+        "Legacy Shaders/Transparent/Diffuse",
+        new Color(0.78f, 0.80f, 0.84f, 0.30f));
+
+      GameObject root = GameObject.Find("BuildSystem");
+      if (root == null) root = new GameObject("BuildSystem");
+
+      GameObject overlayObject = GetOrCreateChild(root.transform, "SectionOverlay", typeof(SectionOverlay));
+      SectionOverlay overlay = overlayObject.GetComponent<SectionOverlay>();
+      overlay.grid = grid;
+      overlay.controller = controller;
+      overlay.templateMaterial = template;
+
+      EnsureBarrier("Store/SectionWalls/ButcherWalls", controller, barrierMaterial);
+      EnsureBarrier("Store/SectionWalls/BakeryWalls", controller, barrierMaterial);
+      EnsureBarrier("Store/SectionWalls/AlcoholWalls", controller, barrierMaterial);
+      EnsureBarrier("Store/SectionWalls/CheckoutWalls", controller, barrierMaterial);
+
+      EditorUtility.SetDirty(overlay);
+      EditorSceneManager.MarkSceneDirty(scene);
+      EditorSceneManager.SaveScene(scene);
+      AssetDatabase.SaveAssets();
+      Debug.Log("Section visuals applied. Storage and deli keep physical walls; other sections use build-mode barriers.");
+    }
+
+    static void EnsureBarrier(string path, BuildController controller, Material barrierMaterial)
+    {
+      GameObject group = GameObject.Find(path);
+      if (group == null)
+      {
+        Debug.LogWarning("BuildSystemSetup: section wall group not found: " + path);
+        return;
+      }
+
+      BuildModeBarrier barrier = group.GetComponent<BuildModeBarrier>();
+      if (barrier == null) barrier = group.AddComponent<BuildModeBarrier>();
+      barrier.controller = controller;
+
+      Collider[] colliders = group.GetComponentsInChildren<Collider>(true);
+      for (int i = 0; i < colliders.Length; i++)
+      {
+        if (colliders[i] != null) UnityEngine.Object.DestroyImmediate(colliders[i]);
+      }
+
+      Renderer[] renderers = group.GetComponentsInChildren<Renderer>(true);
+      for (int i = 0; i < renderers.Length; i++)
+      {
+        if (renderers[i] == null) continue;
+        if (barrierMaterial != null) renderers[i].sharedMaterial = barrierMaterial;
+        renderers[i].enabled = false;
+      }
+
+      EditorUtility.SetDirty(barrier);
+      EditorUtility.SetDirty(group);
     }
 
     static Bounds ShopFloorBounds()

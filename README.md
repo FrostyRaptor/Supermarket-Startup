@@ -20,11 +20,14 @@ All economy, wage, demand, license, unlock and upgrade values live in the
 ScriptableObjects under `Assets/_ScriptableObjects/Game/` and can be tuned in
 the Inspector.
 
-The build grid covers the whole store floor except the walled bakery, butcher,
-deli, storage and alcohol sections. General fixtures build in the aisles;
-`4 x 3` checkout lanes can only be placed in the checkout section, and no other
-placeable can go there. Each placed lane supports one checkout employee, so
-hiring is capped by the number of lanes in the store. See
+The build grid covers the whole store floor except the bakery, butcher, deli,
+storage and alcohol sections. Only storage and deli have physical walls; the
+other fixed sections appear as build-mode-only barriers with a red outline,
+gray fill and centered name label. The general build area has a green outline
+and checkout has a purple outline in build mode. General fixtures build in the
+aisles; `4 x 3` checkout lanes can only be placed in the checkout section, and
+no other placeable can go there. Each placed lane supports one checkout
+employee, so hiring is capped by the number of lanes in the store. See
 `Assets/__Scripts/Building/README.md` for details.
 
 ## Requirements

@@ -49,6 +49,25 @@ hire above the new cap. The overlay only draws grid lines beside cells that are
 inside the plot. To change the layout, edit the zones on `BuildSystem/BuildGrid`
 or update `StoreBuildZones` and rerun setup.
 
+### Section visuals
+
+`SectionOverlay` (on `BuildSystem/SectionOverlay`) draws the section treatment
+only while build mode is active:
+
+- general build area: green outline, no label
+- checkout: purple outline, no label
+- bakery, butcher, deli, storage and alcohol: red outline, gray fill and a
+  centered section-name label
+
+Storage and deli keep physical walls and colliders. The other fixed sections
+use `BuildModeBarrier`, which hides their wall renderers outside build mode and
+keeps their colliders disabled, so they read as visual barriers rather than
+physical walls. Placement permissions are unchanged.
+
+Run `Tools > Supermarket > Build System > Apply Section Visuals` to reapply the
+overlay, barrier components and materials without rebuilding the rest of the
+build system.
+
 ## Adding a placeable
 
 1. Create a prefab in `Assets/_Prefabs/Placeables/`.
@@ -120,7 +139,7 @@ ordering, and hotbar index mapping. Run them from `Window > General > Test Runne
 ```
 Assets/__Scripts/Building/Core/          GridCoord, FootprintUtility, PlaceableDefinition, PlaceableCatalog, PlacedObject
 Assets/__Scripts/Building/Runtime/       BuildGrid, BuildController, BuildInput, PlacementResult, PlacementValidator, IBuildEconomy, SimpleWallet
-Assets/__Scripts/Building/Presentation/  BuildGhost, GridOverlay
+Assets/__Scripts/Building/Presentation/  BuildGhost, GridOverlay, SectionOverlay, BuildModeBarrier
 Assets/__Scripts/Building/UI/            BuildMenuUI
 Assets/__Scripts/Building/Persistence/   BuildLayout, BuildLayoutStore
 Assets/__Scripts/Editor/                 BuildSystemSetup, WebGLBuild
