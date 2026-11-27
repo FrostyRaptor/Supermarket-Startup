@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Supermarket.Building;
 using Supermarket.Config;
+using Supermarket.EditorTools;
 using Supermarket.Core;
 using Supermarket.Customers;
 using GameWallet = Supermarket.Economy.Economy;
@@ -70,6 +71,9 @@ namespace Supermarket.Editor
             UpgradeProfile deli = Upgrade("Deli", "Deli Equipment", new[] { 1, 1, 1, 1, 1 }, new[] { 0, 350, 650, 1050, 1700 });
             deli.efficiencyByLevel = new[] { 1f, 1.3f, 1.7f, 2.2f, 3f };
             deli.yieldByLevel = new[] { 1, 2, 3, 4, 5 };
+            UpgradeProfile butcherStorage = Upgrade("ButcherStorage", "Butcher Storage", new[] { 20, 30, 45, 65, 90 }, new[] { 0, 240, 440, 760, 1200 });
+            UpgradeProfile bakeryStorage = Upgrade("BakeryStorage", "Bakery Storage", new[] { 20, 30, 45, 65, 90 }, new[] { 0, 240, 440, 760, 1200 });
+            UpgradeProfile deliStorage = Upgrade("DeliStorage", "Deli Storage", new[] { 20, 30, 45, 65, 90 }, new[] { 0, 240, 440, 760, 1200 });
             EditorUtility.SetDirty(lane);
             EditorUtility.SetDirty(loading);
             EditorUtility.SetDirty(butcher);
@@ -152,6 +156,11 @@ namespace Supermarket.Editor
             GameManager manager = GetOrAdd<GameManager>(host);
             HUDController hud = GetOrAdd<HUDController>(host);
 
+            AuthoredUICreator.CreatePrefabs(false);
+            GameObject hudPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(AuthoredUICreator.HudPrefabPath);
+            if (hudPrefab == null) Debug.LogWarning("Authored HUD prefab could not be loaded.");
+            SetObj(hud, "hudPrefab", hudPrefab);
+
             SetObj(clock, "config", gameConfig);
             SetObj(economy, "config", gameConfig);
             SetObj(sections, "config", sectionConfig);
@@ -171,6 +180,9 @@ namespace Supermarket.Editor
             SetObj(upgradeSystem, "ButcherProfile", butcher);
             SetObj(upgradeSystem, "BakeryProfile", bakery);
             SetObj(upgradeSystem, "DeliProfile", deli);
+            SetObj(upgradeSystem, "ButcherStorageProfile", butcherStorage);
+            SetObj(upgradeSystem, "BakeryStorageProfile", bakeryStorage);
+            SetObj(upgradeSystem, "DeliStorageProfile", deliStorage);
 
             SetObj(inventory, "catalog", catalog);
             SetObj(inventory, "sections", sections);
@@ -223,7 +235,9 @@ namespace Supermarket.Editor
             SetObj(hud, "economy", economy);
             SetObj(hud, "notices", notices);
             SetObj(hud, "sections", sections);
+            SetObj(hud, "sectionConfig", sectionConfig);
             SetObj(hud, "employees", employeeManager);
+            SetObj(hud, "employeeConfig", employeeConfig);
             SetObj(hud, "upgrades", upgradeSystem);
             SetObj(hud, "inventory", inventory);
             SetObj(hud, "orders", orderManager);
@@ -500,6 +514,7 @@ namespace Supermarket.Editor
             }
             prop.objectReferenceValue = value;
             so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(component);
         }
     }
 }

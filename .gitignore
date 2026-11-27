@@ -34,12 +34,8 @@
 # Opencode directory
 .opencode/
 opencode.jsonc
-opencode_plans/
 AGENTS.md
 SUMMARY.md
-EXPANSION.md
-FINALGAMEPLAN.md
-StoreManagerUI.md
 
 # Gradle cache directory
 .gradle/

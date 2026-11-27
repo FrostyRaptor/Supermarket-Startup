@@ -19,6 +19,7 @@ MonoBehaviour:
   footprint: {x: 2, y: 1}
   pivotOffset: {x: 0, y: 0, z: 0}
   cost: 240
+  allowedArea: 0
   rotatable: 1
   icon: {fileID: 0}
   upgradeProfile: {fileID: 11400000, guid: 415b410b9a54d4a809c991792d666a93, type: 2}

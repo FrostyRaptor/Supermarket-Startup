@@ -16,8 +16,9 @@ using GameWallet = Supermarket.Economy.Economy;
 namespace Supermarket.UI
 {
     /// <summary>
-    /// Runtime-generated tycoon HUD. Keeps the existing build HUD and adds the
-    /// day/rate tab, employee/order/section/upgrade panels and notices.
+    /// Drives the authored Tycoon HUD Canvas prefab. The three tab bodies are
+    /// static hierarchies in the prefab; this controller only shows the active
+    /// one and writes the current game values into its authored text/buttons.
     /// </summary>
     public class HUDController : MonoBehaviour
     {
@@ -26,7 +27,9 @@ namespace Supermarket.UI
         public GameWallet economy;
         public NotificationCenter notices;
         public SectionManager sections;
+        public SectionConfig sectionConfig;
         public EmployeeManager employees;
+        public EmployeeConfig employeeConfig;
         public UpgradeSystem upgrades;
         public Inventory inventory;
         public OrderManager orders;
@@ -35,28 +38,43 @@ namespace Supermarket.UI
         public LiquorLicense license;
         public ProductCatalog catalog;
 
-        enum PanelKind { None, Employees, Upgrades, Orders }
+        [Header("Authored Canvas")]
+        public GameObject hudPrefab;
 
-        const int FontSizeBoost = 15;
+        enum PanelKind { None, Employees, Upgrades, Orders }
 
         static readonly Color Dark = new Color(0.06f, 0.09f, 0.13f, 0.94f);
         static readonly Color Light = new Color(0.91f, 0.94f, 0.97f, 1f);
         static readonly Color Accent = new Color(0.32f, 0.68f, 0.42f, 1f);
         static readonly Color Warn = new Color(0.92f, 0.49f, 0.28f, 1f);
+        static readonly Color Red = new Color(0.88f, 0.31f, 0.26f, 1f);
+        static readonly Color Yellow = new Color(0.95f, 0.76f, 0.25f, 1f);
         static readonly Color Disabled = new Color(0.19f, 0.21f, 0.25f, 1f);
         static readonly Color DisabledText = new Color(0.55f, 0.58f, 0.62f, 1f);
+        static readonly Color NeutralButton = new Color(0.3f, 0.33f, 0.38f, 1f);
+        static readonly Color InactiveTab = new Color(0.24f, 0.28f, 0.34f, 1f);
 
-        GameObject _root;
-        Text _dayText;
+        static readonly StoreSectionType[] UpgradeSections =
+        {
+            StoreSectionType.Storage, StoreSectionType.Butcher, StoreSectionType.Bakery,
+            StoreSectionType.Deli, StoreSectionType.Alcohol
+        };
+
+        static readonly string[] EmployeeLabels = { "Cashier", "Unloader", "Stocker", "Butcher", "Baker", "Deli" };
+
+        static readonly EmployeeRole[] EmployeeRoles =
+        {
+            EmployeeRole.Checkout, EmployeeRole.Unloader, EmployeeRole.Stocker,
+            EmployeeRole.Butcher, EmployeeRole.Bakery, EmployeeRole.Deli
+        };
+
+        HUDView _view;
+        GameObject _hudInstance;
         int _lastDay = -1;
         int _lastMinuteOfDay = -1;
         PanelKind _openPanel;
-        GameObject _modal;
-        RectTransform _modalContent;
-        RectTransform _toastContainer;
         readonly List<Toast> _toasts = new List<Toast>();
-        readonly Dictionary<string, InputField> _orderInputs = new Dictionary<string, InputField>();
-        Font _font;
+        readonly Dictionary<string, int> _cart = new Dictionary<string, int>();
 
         class Toast
         {
@@ -82,18 +100,19 @@ namespace Supermarket.UI
                 if (progression == null) progression = game.progression;
                 if (license == null) license = game.license;
             }
+            if (employeeConfig == null && employees != null) employeeConfig = employees.config;
             if (catalog == null) catalog = FindFirstObjectByType<ProductCatalog>();
             if (catalog == null && orders != null) catalog = orders.catalog;
         }
 
         void Start()
         {
-            _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             EnsureEventSystem();
-            BuildUI();
+            if (!InstantiateView()) return;
             if (notices != null) notices.NoticeRaised += OnNotice;
             if (sections != null) sections.Changed += OnStateChangedUI;
             if (employees != null) employees.CountsChanged += OnStateChangedUI;
+            if (upgrades != null) upgrades.Changed += OnStateChangedUI;
             RefreshStatus();
         }
 
@@ -102,6 +121,7 @@ namespace Supermarket.UI
             if (notices != null) notices.NoticeRaised -= OnNotice;
             if (sections != null) sections.Changed -= OnStateChangedUI;
             if (employees != null) employees.CountsChanged -= OnStateChangedUI;
+            if (upgrades != null) upgrades.Changed -= OnStateChangedUI;
         }
 
         void OnStateChangedUI()
@@ -123,49 +143,47 @@ namespace Supermarket.UI
                     _toasts.RemoveAt(i);
                     continue;
                 }
-                if (remain < 1f) t.group.alpha = remain;
+                if (remain < 1f && t.group != null) t.group.alpha = remain;
             }
         }
 
-        void BuildUI()
+        bool InstantiateView()
         {
-            _root = new GameObject("Tycoon HUD", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
-            _root.transform.SetParent(transform, false);
-            Canvas canvas = _root.GetComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 90;
-            CanvasScaler scaler = _root.GetComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920f, 1080f);
-            scaler.matchWidthOrHeight = 0.5f;
+            if (hudPrefab == null)
+            {
+                Debug.LogError("HUDController needs an authored HUD Canvas prefab assigned.", this);
+                enabled = false;
+                return false;
+            }
 
-            // Top-left day / time tab.
-            GameObject status = Panel("Day & Time", _root.transform, new Vector2(0f, 1f), new Vector2(0f, 1f),
-                new Vector2(0f, 1f), new Vector2(24f, -24f), new Vector2(420f, 72f));
-            _dayText = Label(status.transform, "Day", "", 24, TextAnchor.MiddleLeft, Light,
-                Vector2.zero, Vector2.one, new Vector2(0f, 0f), new Vector2(-2f, -2f), FontStyle.Bold);
-            RectTransform dayRect = _dayText.rectTransform;
-            dayRect.offsetMin = new Vector2(14f, 4f);
-            dayRect.offsetMax = new Vector2(-10f, -4f);
+            _hudInstance = Instantiate(hudPrefab, transform);
+            _view = _hudInstance.GetComponent<HUDView>();
+            if (_view == null)
+            {
+                Debug.LogError("Authored HUD prefab is missing its HUDView component.", this);
+                enabled = false;
+                return false;
+            }
 
-            // Bottom-left store manager button; all management panels live in its tabs.
-            MakeHudButton("Store", _root.transform, new Vector2(0f, 0f), new Vector2(24f, 24f),
-                OpenStore, new Color(0.18f, 0.36f, 0.58f, 1f));
+            if (_view.storeButton != null) _view.storeButton.onClick.AddListener(OpenStore);
+            if (_view.modalCloseButton != null) _view.modalCloseButton.onClick.AddListener(ClosePanel);
+            if (_view.employeesTab != null) _view.employeesTab.onClick.AddListener(delegate { ShowPanel(PanelKind.Employees); });
+            if (_view.upgradesTab != null) _view.upgradesTab.onClick.AddListener(delegate { ShowPanel(PanelKind.Upgrades); });
+            if (_view.ordersTab != null) _view.ordersTab.onClick.AddListener(delegate { ShowPanel(PanelKind.Orders); });
+            if (_view.orders != null)
+            {
+                if (_view.orders.topSubmitButton != null) _view.orders.topSubmitButton.onClick.AddListener(SubmitCart);
+                if (_view.orders.bottomSubmitButton != null) _view.orders.bottomSubmitButton.onClick.AddListener(SubmitCart);
+            }
 
-            // Toast area, under the top-right currency counter.
-            GameObject toasts = new GameObject("Notices", typeof(RectTransform));
-            toasts.transform.SetParent(_root.transform, false);
-            _toastContainer = toasts.GetComponent<RectTransform>();
-            _toastContainer.anchorMin = new Vector2(1f, 1f);
-            _toastContainer.anchorMax = new Vector2(1f, 1f);
-            _toastContainer.pivot = new Vector2(1f, 1f);
-            _toastContainer.anchoredPosition = new Vector2(-24f, -184f);
-            _toastContainer.sizeDelta = new Vector2(480f, 520f);
+            ShowStaticPanel(PanelKind.None);
+            if (_view.modalRoot != null) _view.modalRoot.SetActive(false);
+            return true;
         }
 
         void RefreshStatus()
         {
-            if (_dayText == null) return;
+            if (_view == null || _view.dayText == null) return;
 
             int day = clock == null ? 1 : clock.Day;
             int minuteOfDay = Mathf.FloorToInt((clock == null ? 0f : clock.DayProgress) * 24f * 60f);
@@ -174,311 +192,484 @@ namespace Supermarket.UI
             _lastDay = day;
             _lastMinuteOfDay = minuteOfDay;
             string time = clock == null ? "12:00 AM" : clock.TimeText;
-            _dayText.text = "Day " + day + "   " + time;
+            _view.dayText.text = "Day " + day + "   " + time;
         }
 
         void OpenStore() { ShowPanel(PanelKind.Employees); }
 
         void ShowPanel(PanelKind kind)
         {
+            if (_view == null || _view.modalRoot == null) return;
+
             _openPanel = kind;
-            if (_modal != null) Destroy(_modal);
-            _orderInputs.Clear();
-
-            _modal = new GameObject("Modal", typeof(RectTransform), typeof(Image));
-            _modal.transform.SetParent(_root.transform, false);
-            RectTransform modalRect = _modal.GetComponent<RectTransform>();
-            modalRect.anchorMin = Vector2.zero;
-            modalRect.anchorMax = Vector2.one;
-            modalRect.offsetMin = Vector2.zero;
-            modalRect.offsetMax = Vector2.zero;
-            Image dim = _modal.GetComponent<Image>();
-            dim.color = new Color(0f, 0f, 0f, 0.62f);
-
-            GameObject window = Panel("Window", _modal.transform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(1120f, 860f));
-            GameObject header = Panel("Header", window.transform, new Vector2(0f, 1f), new Vector2(1f, 1f),
-                new Vector2(0.5f, 1f), new Vector2(0f, -42f), new Vector2(0f, 84f));
-            Label(header.transform, "Title", "Store Manager", 26, TextAnchor.MiddleLeft, Light,
-                Vector2.zero, Vector2.one, Vector2.zero, new Vector2(-100f, 0f), FontStyle.Bold);
-            MakeWindowButton("X", header.transform, new Vector2(1f, 0.5f), new Vector2(-42f, 0f), ClosePanel, new Vector2(64f, 58f), Warn);
-
-            GameObject tabs = Panel("Tabs", window.transform, new Vector2(0f, 1f), new Vector2(1f, 1f),
-                new Vector2(0.5f, 1f), new Vector2(0f, -84f), new Vector2(0f, 58f));
-            MakeWindowButton("Employees", tabs.transform, new Vector2(0.5f, 0.5f), new Vector2(-350f, 0f),
-                delegate { ShowPanel(PanelKind.Employees); }, new Vector2(320f, 48f),
-                kind == PanelKind.Employees ? Accent : new Color(0.24f, 0.28f, 0.34f, 1f));
-            MakeWindowButton("Upgrades", tabs.transform, new Vector2(0.5f, 0.5f), Vector2.zero,
-                delegate { ShowPanel(PanelKind.Upgrades); }, new Vector2(320f, 48f),
-                kind == PanelKind.Upgrades ? Accent : new Color(0.24f, 0.28f, 0.34f, 1f));
-            MakeWindowButton("Orders", tabs.transform, new Vector2(0.5f, 0.5f), new Vector2(350f, 0f),
-                delegate { ShowPanel(PanelKind.Orders); }, new Vector2(320f, 48f),
-                kind == PanelKind.Orders ? Accent : new Color(0.24f, 0.28f, 0.34f, 1f));
-
-            GameObject body = Panel("Body", window.transform, Vector2.zero, Vector2.one,
-                new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
-            RectTransform bodyRect = body.GetComponent<RectTransform>();
-            bodyRect.offsetMin = new Vector2(20f, 20f);
-            bodyRect.offsetMax = new Vector2(-20f, -150f);
-            body.GetComponent<Image>().color = new Color(0.03f, 0.05f, 0.08f, 0.55f);
-            body.AddComponent<RectMask2D>();
-
-            ScrollRect scroll = body.AddComponent<ScrollRect>();
-            scroll.horizontal = false;
-            scroll.vertical = true;
-            scroll.viewport = bodyRect;
-            _modalContent = new GameObject("Content", typeof(RectTransform)).GetComponent<RectTransform>();
-            _modalContent.SetParent(body.transform, false);
-            _modalContent.anchorMin = new Vector2(0f, 1f);
-            _modalContent.anchorMax = new Vector2(1f, 1f);
-            _modalContent.pivot = new Vector2(0.5f, 1f);
-            _modalContent.anchoredPosition = Vector2.zero;
-            _modalContent.sizeDelta = new Vector2(0f, 3200f);
-            scroll.content = _modalContent;
-
-            switch (kind)
-            {
-                case PanelKind.Employees: BuildEmployeesPanel(); break;
-                case PanelKind.Upgrades: BuildUpgradesPanel(); break;
-                case PanelKind.Orders: BuildOrdersPanel(); break;
-            }
-
-            scroll.verticalNormalizedPosition = 1f;
+            _view.modalRoot.SetActive(true);
+            ApplyTabColors(kind);
+            ShowStaticPanel(kind);
+            RefreshPanel();
+            if (_view.modalScroll != null) _view.modalScroll.verticalNormalizedPosition = 1f;
         }
 
         void ClosePanel()
         {
             _openPanel = PanelKind.None;
-            if (_modal != null) Destroy(_modal);
-            _modal = null;
+            if (_view != null && _view.modalRoot != null) _view.modalRoot.SetActive(false);
         }
 
-        void BuildEmployeesPanel()
+        void ShowStaticPanel(PanelKind kind)
         {
-            if (employees == null) return;
-            float y = -10f;
-            AddEmployeeGroup(ref y, "Checkout & Sales", EmployeeRole.Checkout);
-            AddEmployeeGroup(ref y, "Storage", EmployeeRole.Unloader, EmployeeRole.Stocker);
-            AddEmployeeGroup(ref y, "Butcher", EmployeeRole.Butcher);
-            AddEmployeeGroup(ref y, "Bakery", EmployeeRole.Bakery);
-            AddEmployeeGroup(ref y, "Deli", EmployeeRole.Deli);
+            if (_view == null) return;
 
-            Label(_modalContent, "Wages", "Daily wages: $" + employees.DailyWages, 22, TextAnchor.MiddleLeft, Accent,
-                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, y - 28f), new Vector2(0f, 56f), FontStyle.Bold);
+            if (_view.employeesPanel != null) _view.employeesPanel.SetActive(kind == PanelKind.Employees);
+            if (_view.upgradesPanel != null) _view.upgradesPanel.SetActive(kind == PanelKind.Upgrades);
+            if (_view.ordersPanel != null) _view.ordersPanel.SetActive(kind == PanelKind.Orders);
         }
 
-        void AddEmployeeGroup(ref float y, string heading, params EmployeeRole[] roles)
+        void ApplyTabColors(PanelKind kind)
         {
-            Heading(ref y, heading);
-            if (roles == null) return;
-            for (int i = 0; i < roles.Length; i++)
+            SetTabColor(_view.employeesTab, kind == PanelKind.Employees);
+            SetTabColor(_view.upgradesTab, kind == PanelKind.Upgrades);
+            SetTabColor(_view.ordersTab, kind == PanelKind.Orders);
+        }
+
+        static void SetTabColor(Button button, bool selected)
+        {
+            if (button == null) return;
+            Image image = button.targetGraphic as Image;
+            if (image == null) image = button.GetComponent<Image>();
+            if (image != null) image.color = selected ? Accent : InactiveTab;
+        }
+
+        void RefreshPanel()
+        {
+            if (_view == null || _openPanel == PanelKind.None) return;
+
+            switch (_openPanel)
             {
-                EmployeeRole role = roles[i];
-                int max = employees.Max(role);
-                string label = role + "   " + employees.Count(role) + " / " + max + "   $" + Wage(role) + "/day";
-                Row(y, label,
-                    delegate { employees.TryFire(role); RefreshPanel(); },
-                    delegate { employees.TryHire(role); RefreshPanel(); },
-                    "-", "+");
-                y -= 86f;
+                case PanelKind.Employees: RefreshEmployeesPanel(); break;
+                case PanelKind.Upgrades: RefreshUpgradesPanel(); break;
+                case PanelKind.Orders: RefreshOrdersPanel(); break;
+            }
+        }
+
+        void RefreshEmployeesPanel()
+        {
+            HudEmployeesView view = _view.employees;
+            if (view == null) return;
+
+            HudRowView[] rows = view.rows;
+            for (int i = 0; i < EmployeeRoles.Length; i++)
+            {
+                if (rows == null || i >= rows.Length) break;
+                HudRowView row = rows[i];
+                if (row == null) continue;
+
+                EmployeeRole role = EmployeeRoles[i];
+                string label = employees == null
+                    ? EmployeeLabels[i]
+                    : EmployeeLabels[i] + "   " + employees.Count(role) + " / " + employees.Max(role) +
+                      "   $" + Wage(role) + "/day";
+                SetRowLabel(row, label, true);
+
+                ShowButton(row.leftButton);
+                ConfigureButton(row.leftButton, row.leftLabel, "-", NeutralButton,
+                    employees == null ? null : delegate { employees.TryFire(role); RefreshPanel(); }, employees != null);
+
+                ShowButton(row.rightButton);
+                ConfigureButton(row.rightButton, row.rightLabel, "+", Accent,
+                    employees == null ? null : delegate { employees.TryHire(role); RefreshPanel(); }, employees != null);
+            }
+
+            if (view.wagesText != null)
+            {
+                view.wagesText.text = "Daily wages: $" + (employees == null ? 0 : employees.DailyWages) + " / day";
             }
         }
 
         int Wage(EmployeeRole role)
         {
-            EmployeeConfig cfg = FindFirstObjectByType<EmployeeConfig>();
-            return cfg == null ? 0 : cfg.WageFor(role);
+            return WageFor(employeeConfig, role);
         }
 
-        void BuildOrdersPanel()
+        /// <summary>Reads the configured daily wage for one staffable role.</summary>
+        public static int WageFor(EmployeeConfig config, EmployeeRole role)
         {
-            if (catalog == null || orders == null || inventory == null) return;
-            float y = -6f;
-            for (int i = 0; i < catalog.products.Count; i++)
+            return config == null ? 0 : config.WageFor(role);
+        }
+
+        void RefreshOrdersPanel()
+        {
+            HudOrdersView view = _view.orders;
+            if (view == null) return;
+
+            PruneCart();
+
+            int total = CartTotal();
+            SetOrderSummary(view.topTotalText, view.topSubmitButton, total);
+            SetOrderSummary(view.bottomTotalText, view.bottomSubmitButton, total);
+
+            if (view.rows == null) return;
+
+            for (int i = 0; i < view.rows.Length; i++)
             {
-                ProductInfo p = catalog.products[i];
-                if (p == null) continue;
-                int suggestion = orders.SuggestQuantity(p.id);
+                HudOrderRowView row = view.rows[i];
+                if (row == null) continue;
 
-                GameObject row = Panel("Product " + p.id, _modalContent, new Vector2(0f, 1f), new Vector2(1f, 1f),
-                    new Vector2(0.5f, 1f), new Vector2(0f, y), new Vector2(0f, 62f));
-                Label(row.transform, "Name", p.displayName + "  (suggest " + suggestion + ")  $" + p.unitCost.ToString("0.00") + " each",
-                    18, TextAnchor.MiddleLeft, Light, Vector2.zero, new Vector2(0.62f, 1f), Vector2.zero, Vector2.zero, FontStyle.Normal);
+                bool available = catalog != null && orders != null &&
+                    i < catalog.products.Count && catalog.products[i] != null;
+                if (!available)
+                {
+                    row.gameObject.SetActive(false);
+                    continue;
+                }
+                row.gameObject.SetActive(true);
 
-                GameObject inputObj = new GameObject("Qty", typeof(RectTransform), typeof(Image), typeof(InputField));
-                inputObj.transform.SetParent(row.transform, false);
-                RectTransform inputRect = inputObj.GetComponent<RectTransform>();
-                inputRect.anchorMin = new Vector2(0.64f, 0.10f);
-                inputRect.anchorMax = new Vector2(0.78f, 0.90f);
-                inputRect.offsetMin = Vector2.zero;
-                inputRect.offsetMax = Vector2.zero;
-                inputObj.GetComponent<Image>().color = new Color(1f, 1f, 1f, 0.94f);
-                InputField field = inputObj.GetComponent<InputField>();
-                field.textComponent = Label(inputObj.transform, "Value", suggestion.ToString(), 18, TextAnchor.MiddleCenter,
-                    new Color(0.1f, 0.1f, 0.1f, 1f), Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, FontStyle.Normal);
-                field.text = suggestion.ToString();
-                field.contentType = InputField.ContentType.IntegerNumber;
-                _orderInputs[p.id] = field;
+                ProductInfo product = catalog.products[i];
+                bool canOrder = orders.CanOrderProduct(product) && IsSectionUnlocked(product.section);
+                if (!canOrder && _cart.ContainsKey(product.id)) _cart.Remove(product.id);
 
-                string id = p.id;
-                MakeWindowButton("Order", row.transform, new Vector2(0.92f, 0.5f), Vector2.zero,
-                    delegate { PlaceOrder(id); }, new Vector2(150f, 54f), Accent);
-                y -= 70f;
+                if (row.nameText != null)
+                {
+                    row.nameText.text = product.displayName;
+                    row.nameText.color = canOrder ? Light : DisabledText;
+                }
+                if (row.costText != null)
+                {
+                    row.costText.text = "$" + product.unitCost.ToString("0.00");
+                    row.costText.color = canOrder ? Light : DisabledText;
+                }
+
+                int suggestion = orders.SuggestQuantity(product.id);
+                if (row.suggestionText != null)
+                {
+                    row.suggestionText.text = suggestion.ToString();
+                    row.suggestionText.color = canOrder ? Light : DisabledText;
+                }
+                if (row.quantityInput != null)
+                {
+                    row.quantityInput.text = suggestion.ToString();
+                    row.quantityInput.interactable = canOrder;
+                }
+                if (row.background != null) row.background.color = canOrder ? Dark : Disabled;
+
+                string id = product.id;
+                InputField input = row.quantityInput;
+                if (row.orderButton != null)
+                {
+                    row.orderButton.interactable = canOrder;
+                    Image image = row.orderButton.targetGraphic as Image;
+                    if (image == null) image = row.orderButton.GetComponent<Image>();
+                    if (image != null) image.color = canOrder ? Accent : Disabled;
+                    row.orderButton.onClick.RemoveAllListeners();
+                    if (canOrder) row.orderButton.onClick.AddListener(delegate { AddToCart(id, input); });
+                }
+
             }
         }
 
-        void PlaceOrder(string productId)
+        void SetOrderSummary(Text totalText, Button submitButton, int total)
         {
-            InputField field;
-            int qty = 0;
-            if (_orderInputs.TryGetValue(productId, out field)) int.TryParse(field.text, out qty);
-            if (qty > 0 && orders.TryPlaceOrder(productId, qty)) RefreshPanel();
-        }
-
-        void BuildSectionAccess(ref float y)
-        {
-            Heading(ref y, "Section Access");
-            StoreSectionType[] lockable =
+            bool affordable = economy == null || economy.CanAfford(total);
+            if (totalText != null)
             {
-                StoreSectionType.Butcher, StoreSectionType.Bakery, StoreSectionType.Deli,
-                StoreSectionType.Checkout, StoreSectionType.Alcohol
-            };
-            for (int i = 0; i < lockable.Length; i++)
-            {
-                StoreSectionType type = lockable[i];
-                bool unlocked = IsSectionUnlocked(type);
-                string label = type + (unlocked ? "  - owned" : "  - unlock $" + (sections == null ? 0 : sections.UnlockCost(type)));
-                GameObject row = Panel("Section " + type, _modalContent, new Vector2(0f, 1f), new Vector2(1f, 1f),
-                    new Vector2(0.5f, 1f), new Vector2(0f, y), new Vector2(0f, 58f));
-                Label(row.transform, "Label", label, 18, TextAnchor.MiddleLeft, unlocked ? Light : DisabledText,
-                    Vector2.zero, new Vector2(0.7f, 1f), Vector2.zero, Vector2.zero, FontStyle.Normal);
-                if (unlocked)
-                {
-                    MakeWindowButton("Owned", row.transform, new Vector2(0.88f, 0.5f), Vector2.zero, null,
-                        new Vector2(160f, 52f), Disabled, false);
-                }
-                else
-                {
-                    StoreSectionType captured = type;
-                    MakeWindowButton("Unlock", row.transform, new Vector2(0.88f, 0.5f), Vector2.zero,
-                        delegate { if (progression != null) progression.TryUnlockSection(captured); RefreshPanel(); },
-                        new Vector2(160f, 52f), Accent);
-                }
-                y -= 66f;
+                totalText.text = "Total Cost: $" + total;
+                totalText.color = TotalCostColor(affordable);
             }
-
-            if (sections != null)
+            if (submitButton != null)
             {
-                Label(_modalContent, "Expand", "Checkout lanes placed: " + sections.CheckoutLanes +
-                    " (build mode B)     Loading zones: " + sections.LoadingZones + " / " + sections.MaxLoadingZones, 18,
-                    TextAnchor.MiddleLeft, Light, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, y - 26f), new Vector2(0f, 52f), FontStyle.Normal);
-                y -= 56f;
-                Row(y, "Add loading zone  $300",
-                    delegate { sections.TryExpandLoadingZone(); RefreshPanel(); }, null, "Buy", "+");
-                y -= 86f;
-            }
-
-            if (license != null)
-            {
-                Label(_modalContent, "License", "Liquor license: " + license.StatusText, 20, TextAnchor.MiddleLeft,
-                    license.IsApproved ? Accent : Warn, new Vector2(0f, 1f), new Vector2(1f, 1f),
-                    new Vector2(0f, y - 26f), new Vector2(0f, 52f), FontStyle.Bold);
-                y -= 56f;
-                if (license.CanFileStage1)
-                {
-                    Row(y, "File background check  $" + license.Stage1Fee,
-                        delegate { license.TryFileStage1(economy, clock == null ? 1 : clock.BusinessDay); RefreshPanel(); },
-                        null, "File", "+");
-                    y -= 86f;
-                }
-                if (license.CanFileStage2)
-                {
-                    Row(y, "File final paperwork  $" + license.Stage2Fee,
-                        delegate { license.TryFileStage2(economy, clock == null ? 1 : clock.BusinessDay); RefreshPanel(); },
-                        null, "File", "+");
-                    y -= 86f;
-                }
+                ConfigureButton(submitButton, ButtonLabel(submitButton), "Buy", Accent,
+                    SubmitCart, _cart.Count > 0 && affordable);
             }
         }
 
-        void BuildUpgradesPanel()
+        void AddToCart(string productId, InputField field)
         {
-            float y = -10f;
-            BuildSectionAccess(ref y);
-            Heading(ref y, "Upgrade Paths");
+            int quantity = 0;
+            if (field != null) int.TryParse(field.text, out quantity);
+            if (quantity <= 0) return;
 
-            SectionHeading(ref y, "Checkout & Sales", StoreSectionType.Checkout);
-            AddUpgradeRow(ref y, "Checkout lane 1", UpgradeSystem.CheckoutKeyPrefix + "0",
-                upgrades == null ? null : upgrades.LaneProfile, StoreSectionType.Checkout);
-
-            SectionHeading(ref y, "Storage", StoreSectionType.Storage);
-            AddUpgradeRow(ref y, "Loading zone 1", UpgradeSystem.LoadingZoneKeyPrefix + "0",
-                upgrades == null ? null : upgrades.LoadingZoneProfile, StoreSectionType.Storage);
-            AddUpgradeRow(ref y, "Storage shelf 1", UpgradeSystem.StorageShelfKeyPrefix + "0",
-                upgrades == null ? null : upgrades.StorageShelfProfile, StoreSectionType.Storage);
-
-            SectionHeading(ref y, "Butcher", StoreSectionType.Butcher);
-            AddUpgradeRow(ref y, "Butcher equipment", UpgradeSystem.ButcherKey,
-                upgrades == null ? null : upgrades.ButcherProfile, StoreSectionType.Butcher);
-
-            SectionHeading(ref y, "Bakery", StoreSectionType.Bakery);
-            AddUpgradeRow(ref y, "Bakery equipment", UpgradeSystem.BakeryKey,
-                upgrades == null ? null : upgrades.BakeryProfile, StoreSectionType.Bakery);
-
-            SectionHeading(ref y, "Deli", StoreSectionType.Deli);
-            AddUpgradeRow(ref y, "Deli equipment", UpgradeSystem.DeliKey,
-                upgrades == null ? null : upgrades.DeliProfile, StoreSectionType.Deli);
-
-            SectionHeading(ref y, "General Shelves & Fixtures", StoreSectionType.General);
-            AddFixtureGroup(ref y, false);
-
-            SectionHeading(ref y, "Alcohol Shelves", StoreSectionType.Alcohol);
-            AddFixtureGroup(ref y, true);
+            int current;
+            _cart.TryGetValue(productId, out current);
+            _cart[productId] = current + quantity;
+            RefreshPanel();
         }
 
-        void AddFixtureGroup(ref float y, bool alcohol)
+        void SubmitCart()
         {
-            if (upgrades == null) return;
-            bool found = false;
+            if (_cart.Count == 0 || orders == null) return;
+            int total = CartTotal();
+            if (economy != null && !economy.CanAfford(total)) return;
+
+            Dictionary<string, int> snapshot = new Dictionary<string, int>(_cart);
+            foreach (KeyValuePair<string, int> pair in snapshot)
+                orders.TryPlaceOrder(pair.Key, pair.Value);
+
+            _cart.Clear();
+            RefreshPanel();
+        }
+
+        int CartTotal()
+        {
+            if (orders == null) return 0;
+            int total = 0;
+            foreach (KeyValuePair<string, int> pair in _cart)
+                total += orders.OrderCost(pair.Key, pair.Value);
+            return total;
+        }
+
+        void PruneCart()
+        {
+            if (_cart.Count == 0 || catalog == null || orders == null) return;
+            List<string> ids = new List<string>(_cart.Keys);
+            for (int i = 0; i < ids.Count; i++)
+            {
+                ProductInfo product = catalog.Get(ids[i]);
+                if (product == null || !orders.CanOrderProduct(product) || !IsSectionUnlocked(product.section))
+                    _cart.Remove(ids[i]);
+            }
+        }
+
+        void RefreshUpgradesPanel()
+        {
+            HudUpgradesView view = _view.upgrades;
+            if (view == null) return;
+
+            for (int i = 0; i < UpgradeSections.Length; i++)
+            {
+                StoreSectionType section = UpgradeSections[i];
+                bool unlocked = IsSectionUnlocked(section);
+                HudRowView title = view.sectionRows != null && i < view.sectionRows.Length ? view.sectionRows[i] : null;
+                RefreshSectionTitle(title, section, unlocked);
+            }
+
+            RefreshStorageSection(view, IsSectionUnlocked(StoreSectionType.Storage));
+            RefreshSectionPair(view.butcherRows, "Equipment Upgrade", UpgradeSystem.ButcherKey,
+                upgrades == null ? null : upgrades.ButcherProfile, UpgradeSystem.ButcherStorageKey,
+                upgrades == null ? null : upgrades.ButcherStorageProfile, StoreSectionType.Butcher);
+            RefreshSectionPair(view.bakeryRows, "Equipment Upgrade", UpgradeSystem.BakeryKey,
+                upgrades == null ? null : upgrades.BakeryProfile, UpgradeSystem.BakeryStorageKey,
+                upgrades == null ? null : upgrades.BakeryStorageProfile, StoreSectionType.Bakery);
+            RefreshSectionPair(view.deliRows, "Equipment Upgrade", UpgradeSystem.DeliKey,
+                upgrades == null ? null : upgrades.DeliProfile, UpgradeSystem.DeliStorageKey,
+                upgrades == null ? null : upgrades.DeliStorageProfile, StoreSectionType.Deli);
+            RefreshAlcoholSection(view, IsSectionUnlocked(StoreSectionType.Alcohol));
+        }
+
+        void RefreshSectionTitle(HudRowView row, StoreSectionType section, bool unlocked)
+        {
+            if (row == null) return;
+
+            if (row.label != null)
+            {
+                row.label.text = section.ToString();
+                row.label.color = TitleColor(section, unlocked);
+            }
+            HideButton(row.leftButton);
+
+            if (row.priceText != null)
+            {
+                row.priceText.gameObject.SetActive(!unlocked);
+                row.priceText.text = "$" + (sections == null ? 0 : sections.UnlockCost(section));
+                row.priceText.color = unlocked ? DisabledText : Light;
+            }
+
+            if (unlocked)
+            {
+                HideButton(row.rightButton);
+                return;
+            }
+
+            ShowButton(row.rightButton);
+            StoreSectionType captured = section;
+            ConfigureButton(row.rightButton, row.rightLabel, "Buy", Accent, delegate
+            {
+                if (progression != null) progression.TryUnlockSection(captured);
+                else if (sections != null) sections.TryUnlock(captured);
+                RefreshPanel();
+            }, true);
+        }
+
+        Color TitleColor(StoreSectionType section, bool unlocked)
+        {
+            if (section == StoreSectionType.Alcohol && license != null && !license.IsApproved &&
+                license.Stage != LicenseStage.NotStarted)
+                return Yellow;
+            return unlocked ? Accent : Red;
+        }
+
+        void RefreshStorageSection(HudUpgradesView view, bool unlocked)
+        {
+            if (view.storageInfoText != null)
+            {
+                view.storageInfoText.gameObject.SetActive(true);
+                view.storageInfoText.text = "Loading zones: " + (sections == null ? 1 : sections.LoadingZones) + " / " +
+                    (sections == null ? 3 : sections.MaxLoadingZones);
+                view.storageInfoText.color = unlocked ? Light : DisabledText;
+            }
+
+            HudRowView[] rows = view.storageRows;
+            if (rows == null) return;
+
+            int zones = sections == null ? 1 : sections.LoadingZones;
+            int maxZones = sections == null ? 3 : sections.MaxLoadingZones;
+            int expandCost = sectionConfig == null ? 300 : Mathf.Max(0, sectionConfig.loadingZoneCost);
+            if (rows.Length > 0)
+            {
+                HudRowView expand = rows[0];
+                RefreshPurchaseRow(expand, "Add loading zone", expandCost, unlocked && zones < maxZones,
+                    Accent, delegate { if (sections != null) sections.TryExpandLoadingZone(); RefreshPanel(); });
+            }
+
+            UpgradeProfile profile = upgrades == null ? null : upgrades.LoadingZoneProfile;
+            if (rows.Length > 1)
+                ApplyUpgradeRow(rows[1], "Loading Zone 1 Upgrade", UpgradeSystem.LoadingZoneKeyPrefix + "0", profile, unlocked);
+            if (rows.Length > 2)
+                ApplyUpgradeRow(rows[2], "Loading Zone 2 Upgrade", UpgradeSystem.LoadingZoneKeyPrefix + "1", profile,
+                    unlocked && zones >= 2);
+            if (rows.Length > 3)
+                ApplyUpgradeRow(rows[3], "Loading Zone 3 Upgrade", UpgradeSystem.LoadingZoneKeyPrefix + "2", profile,
+                    unlocked && zones >= 3);
+            if (rows.Length > 4)
+                ApplyUpgradeRow(rows[4], "Storage Shelves Upgrade", UpgradeSystem.StorageShelfKeyPrefix + "0",
+                    upgrades == null ? null : upgrades.StorageShelfProfile, unlocked);
+        }
+
+        void RefreshSectionPair(HudRowView[] rows, string equipmentLabel, string equipmentKey, UpgradeProfile equipmentProfile,
+            string storageKey, UpgradeProfile storageProfile, StoreSectionType section)
+        {
+            if (rows == null) return;
+            bool unlocked = IsSectionUnlocked(section);
+            if (rows.Length > 0) ApplyUpgradeRow(rows[0], equipmentLabel, equipmentKey, equipmentProfile, unlocked);
+            if (rows.Length > 1) ApplyUpgradeRow(rows[1], "Storage Upgrade", storageKey, storageProfile, unlocked);
+        }
+
+        void ApplyUpgradeRow(HudRowView row, string label, string key, UpgradeProfile profile, bool enabled)
+        {
+            if (row == null) return;
+            row.gameObject.SetActive(true);
+
+            int level = upgrades == null ? 1 : upgrades.GetLevel(key);
+            bool maxed = upgrades == null || profile == null || level >= UpgradeProfile.MaxLevel;
+            bool canUpgrade = enabled && !maxed && upgrades != null && profile != null;
+
+            SetRowLabel(row, label + "   Lv " + level + " / " + UpgradeProfile.MaxLevel, enabled);
+            SetPrice(row.priceText, profile == null ? "-" : "$" + profile.CostForNextLevel(level), enabled, !maxed);
+            HideButton(row.rightButton);
+            ConfigureButton(row.leftButton, row.leftLabel, maxed ? "Max" : (canUpgrade ? "Buy" : "Locked"), NeutralButton,
+                canUpgrade ? delegate { upgrades.TryUpgradeFixed(key, profile, label); RefreshPanel(); } : null, canUpgrade);
+        }
+
+        void RefreshPurchaseRow(HudRowView row, string label, int cost, bool enabled, Color color, Action onClick,
+            string buttonText = "Buy")
+        {
+            if (row == null) return;
+            row.gameObject.SetActive(true);
+            SetRowLabel(row, label, enabled);
+            SetPrice(row.priceText, "$" + Mathf.Max(0, cost), enabled, true);
+            HideButton(row.rightButton);
+            ConfigureButton(row.leftButton, row.leftLabel, enabled ? buttonText : "Locked", color,
+                enabled ? onClick : null, enabled);
+        }
+
+        void RefreshAlcoholSection(HudUpgradesView view, bool unlocked)
+        {
+            if (view.licenseStatusText != null)
+            {
+                view.licenseStatusText.gameObject.SetActive(true);
+                view.licenseStatusText.text = "Liquor License: " + LicenseStatus(license);
+                view.licenseStatusText.color = LicenseStatusColor(unlocked);
+            }
+
+            int day = clock == null ? 1 : clock.BusinessDay;
+            RefreshPurchaseRow(view.licenseStage1Row, "File Background Check", license == null ? 0 : license.Stage1Fee,
+                !unlocked && license != null && license.CanFileStage1, Accent,
+                delegate { if (license != null) license.TryFileStage1(economy, day); RefreshPanel(); }, "File");
+            RefreshPurchaseRow(view.licenseStage2Row, "File Final Paperwork", license == null ? 0 : license.Stage2Fee,
+                !unlocked && license != null && license.CanFileStage2, Accent,
+                delegate { if (license != null) license.TryFileStage2(economy, day); RefreshPanel(); }, "File");
+
+            bool canPurchase = !unlocked && (license == null || license.IsApproved);
+            RefreshPurchaseRow(view.alcoholSectionPurchaseRow, "Section Purchase",
+                sections == null ? 0 : sections.UnlockCost(StoreSectionType.Alcohol), canPurchase, Accent,
+                delegate
+                {
+                    if (progression != null) progression.TryUnlockSection(StoreSectionType.Alcohol);
+                    else if (sections != null) sections.TryUnlock(StoreSectionType.Alcohol);
+                    RefreshPanel();
+                });
+
+            ApplyFixtureGroup(view.alcoholFixtureRows, view.alcoholEmptyText, CollectFixtures(true),
+                "No alcohol shelves placed yet.", StoreSectionType.Alcohol, unlocked);
+        }
+
+        Color LicenseStatusColor(bool unlocked)
+        {
+            if (unlocked || (license != null && license.IsApproved)) return Accent;
+            if (license != null && license.Stage != LicenseStage.NotStarted) return Yellow;
+            return Red;
+        }
+
+        /// <summary>Maps the license state machine to the three displayed statuses.</summary>
+        public static string LicenseStatus(LiquorLicense license)
+        {
+            if (license == null || license.Stage == LicenseStage.NotStarted) return "Incomplete";
+            if (license.IsApproved) return "Complete";
+            return "In Progress";
+        }
+
+        /// <summary>Orders total color required by UILayout.md.</summary>
+        public static Color TotalCostColor(bool affordable) { return affordable ? Accent : Red; }
+
+        List<KeyValuePair<string, UpgradeableFixture>> CollectFixtures(bool alcohol)
+        {
+            List<KeyValuePair<string, UpgradeableFixture>> result = new List<KeyValuePair<string, UpgradeableFixture>>();
+            if (upgrades == null) return result;
+
             foreach (KeyValuePair<string, UpgradeableFixture> pair in upgrades.Fixtures)
             {
-                UpgradeableFixture f = pair.Value;
-                if (f == null || IsAlcoholFixture(f) != alcohol) continue;
-                found = true;
-                string key = pair.Key;
-                string name = f.Placed != null && f.Placed.Definition != null ? f.Placed.Definition.displayName : "Fixture";
-                AddFixtureRow(ref y, name, key, f, alcohol ? StoreSectionType.Alcohol : StoreSectionType.General);
+                if (pair.Value == null || IsAlcoholFixture(pair.Value) != alcohol) continue;
+                result.Add(pair);
             }
-            if (!found)
+            return result;
+        }
+
+        void ApplyFixtureGroup(HudRowView[] rows, Text emptyText,
+            List<KeyValuePair<string, UpgradeableFixture>> fixtures, string emptyMessage,
+            StoreSectionType section, bool sectionUnlocked)
+        {
+            if (emptyText != null)
             {
-                Label(_modalContent, "Empty", alcohol ? "No alcohol shelves placed yet." : "No shelves or fixtures placed yet.",
-                    18, TextAnchor.MiddleLeft, DisabledText, new Vector2(0f, 1f), new Vector2(1f, 1f),
-                    new Vector2(0f, y - 26f), new Vector2(0f, 52f), FontStyle.Normal);
-                y -= 56f;
+                emptyText.gameObject.SetActive(fixtures.Count == 0);
+                emptyText.text = emptyMessage;
+                emptyText.color = DisabledText;
             }
-        }
+            if (rows == null) return;
 
-        void AddUpgradeRow(ref float y, string label, string key, UpgradeProfile profile, StoreSectionType section)
-        {
-            bool locked = !IsSectionUnlocked(section);
-            int level = upgrades == null ? 1 : upgrades.GetLevel(key);
-            string cost = profile == null ? "-" : "$" + profile.CostForNextLevel(level);
-            string detail = locked ? "  - section locked" : "   Lv " + level + " / 5   next " + cost;
-            Row(y, label + detail,
-                locked ? (Action)null : delegate { upgrades.TryUpgradeFixed(key, profile, label); RefreshPanel(); },
-                null, locked ? "Locked" : "Upgrade", "+", locked);
-            y -= 86f;
-        }
+            for (int i = 0; i < rows.Length; i++)
+            {
+                HudRowView row = rows[i];
+                if (row == null) continue;
+                if (i >= fixtures.Count)
+                {
+                    row.gameObject.SetActive(false);
+                    continue;
+                }
 
-        void AddFixtureRow(ref float y, string label, string key, UpgradeableFixture fixture, StoreSectionType section)
-        {
-            bool locked = !IsSectionUnlocked(section);
-            string cost = fixture.profile == null ? "-" : "$" + fixture.profile.CostForNextLevel(fixture.level);
-            string detail = locked ? "  - section locked" : "   Lv " + fixture.level + " / 5   " + fixture.stock + "/" + fixture.Capacity + "   next " + cost;
-            Row(y, label + detail,
-                locked ? (Action)null : delegate { fixture.TryUpgrade(economy); RefreshPanel(); },
-                null, locked ? "Locked" : "Upgrade", "+", locked);
-            y -= 86f;
+                KeyValuePair<string, UpgradeableFixture> pair = fixtures[i];
+                UpgradeableFixture fixture = pair.Value;
+                bool locked = upgrades == null || !sectionUnlocked;
+                row.gameObject.SetActive(true);
+
+                string name = fixture.Placed != null && fixture.Placed.Definition != null
+                    ? fixture.Placed.Definition.displayName : "Fixture";
+                string cost = fixture.profile == null ? "-" : "$" + fixture.profile.CostForNextLevel(fixture.level);
+                string detail = locked ? "  - section locked"
+                    : "   Lv " + fixture.level + " / 5   " + fixture.stock + "/" + fixture.Capacity + "   next " + cost;
+                SetRowLabel(row, name + detail, !locked);
+                SetPrice(row.priceText, cost, !locked, true);
+                HideButton(row.rightButton);
+                ConfigureButton(row.leftButton, row.leftLabel, locked ? "Locked" : "Upgrade", NeutralButton,
+                    locked ? null : delegate { fixture.TryUpgrade(economy); RefreshPanel(); }, !locked);
+            }
         }
 
         bool IsSectionUnlocked(StoreSectionType type)
@@ -494,139 +685,88 @@ namespace Supermarket.UI
             return !string.IsNullOrEmpty(id) && id.StartsWith("alcohol", StringComparison.OrdinalIgnoreCase);
         }
 
-        void Heading(ref float y, string title)
+        static void SetRowLabel(HudRowView row, string text, bool enabled)
         {
-            Heading(ref y, title, Accent);
+            if (row == null || row.label == null) return;
+            row.label.text = text;
+            row.label.color = enabled ? Light : DisabledText;
         }
 
-        void Heading(ref float y, string title, Color color)
+        static void SetPrice(Text price, string text, bool enabled, bool visible)
         {
-            Label(_modalContent, "Heading", title, 20, TextAnchor.MiddleLeft, color,
-                new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, y - 20f), new Vector2(0f, 40f), FontStyle.Bold);
-            y -= 42f;
+            if (price == null) return;
+            price.gameObject.SetActive(visible);
+            price.text = text;
+            price.color = enabled ? Light : DisabledText;
         }
 
-        void SectionHeading(ref float y, string title, StoreSectionType type)
+        static Text ButtonLabel(Button button)
         {
-            bool unlocked = IsSectionUnlocked(type);
-            Heading(ref y, title + (unlocked ? "" : "  (locked)"), unlocked ? Accent : DisabledText);
+            if (button == null) return null;
+            Transform label = button.transform.Find("Label");
+            return label == null ? null : label.GetComponent<Text>();
         }
 
-        void Row(float y, string label, Action left, Action right, string leftText, string rightText, bool locked = false)
+        static void ShowButton(Button button)
         {
-            GameObject row = Panel("Row", _modalContent, new Vector2(0f, 1f), new Vector2(1f, 1f),
-                new Vector2(0.5f, 1f), new Vector2(0f, y), new Vector2(0f, 78f));
-            Label(row.transform, "Label", label, 18, TextAnchor.MiddleLeft, locked ? DisabledText : Light,
-                Vector2.zero, new Vector2(0.5f, 1f), Vector2.zero, Vector2.zero, FontStyle.Normal);
-            if (left != null)
-                MakeWindowButton(leftText, row.transform, new Vector2(0.68f, 0.5f), Vector2.zero, left,
-                    new Vector2(140f, 54f), locked ? Disabled : new Color(0.3f, 0.33f, 0.38f, 1f), !locked);
-            else if (locked)
-                MakeWindowButton(leftText, row.transform, new Vector2(0.68f, 0.5f), Vector2.zero, null,
-                    new Vector2(140f, 54f), Disabled, false);
-            if (right != null)
-                MakeWindowButton(rightText, row.transform, new Vector2(0.88f, 0.5f), Vector2.zero, right,
-                    new Vector2(140f, 54f), Accent, !locked);
+            if (button != null) button.gameObject.SetActive(true);
         }
 
-        void RefreshPanel()
+        static void HideButton(Button button)
         {
-            if (_openPanel == PanelKind.None) return;
-            ShowPanel(_openPanel);
+            if (button != null) button.gameObject.SetActive(false);
+        }
+
+        static void ConfigureButton(Button button, Text label, string text, Color color, Action onClick, bool enabled)
+        {
+            if (button == null) return;
+
+            button.interactable = enabled;
+            Image image = button.targetGraphic as Image;
+            if (image == null) image = button.GetComponent<Image>();
+            if (image != null) image.color = enabled ? color : Disabled;
+
+            if (label != null)
+            {
+                label.text = text;
+                label.color = enabled ? Color.white : DisabledText;
+            }
+
+            button.onClick.RemoveAllListeners();
+            if (onClick != null && enabled) button.onClick.AddListener(delegate { onClick(); });
         }
 
         void OnNotice(string message, NoticeKind kind)
         {
-            if (_toastContainer == null) return;
-            GameObject toast = Panel("Toast", _toastContainer, new Vector2(0f, 1f), new Vector2(1f, 1f),
-                new Vector2(0.5f, 1f), new Vector2(0f, -_toasts.Count * 76f), new Vector2(0f, 72f));
-            Image image = toast.GetComponent<Image>();
-            image.color = kind == NoticeKind.Warning ? new Color(0.45f, 0.18f, 0.12f, 0.96f)
-                : kind == NoticeKind.Success ? new Color(0.10f, 0.32f, 0.18f, 0.96f) : Dark;
-            Label(toast.transform, "Message", message, 16, TextAnchor.MiddleLeft, Light,
-                Vector2.zero, Vector2.one, new Vector2(12f, 4f), new Vector2(-12f, -4f), FontStyle.Normal);
-            Toast t = new Toast { go = toast, group = toast.AddComponent<CanvasGroup>(), expiry = Time.unscaledTime + 6f };
+            if (_view == null || _view.noticesContainer == null || _view.toastTemplate == null) return;
+
+            GameObject toast = Instantiate(_view.toastTemplate, _view.noticesContainer);
+            toast.SetActive(true);
+            RectTransform rect = toast.GetComponent<RectTransform>();
+            if (rect != null)
+            {
+                rect.anchorMin = new Vector2(0f, 1f);
+                rect.anchorMax = new Vector2(1f, 1f);
+                rect.pivot = new Vector2(0.5f, 1f);
+                rect.anchoredPosition = new Vector2(0f, -_toasts.Count * 76f);
+                rect.sizeDelta = new Vector2(0f, 72f);
+            }
+
+            HudToastView toastView = toast.GetComponent<HudToastView>();
+            if (toastView != null)
+            {
+                if (toastView.background != null)
+                {
+                    toastView.background.color = kind == NoticeKind.Warning ? new Color(0.45f, 0.18f, 0.12f, 0.96f)
+                        : kind == NoticeKind.Success ? new Color(0.10f, 0.32f, 0.18f, 0.96f) : Dark;
+                }
+                if (toastView.message != null) toastView.message.text = message;
+            }
+
+            CanvasGroup group = toastView != null ? toastView.group : null;
+            if (group == null) group = toast.AddComponent<CanvasGroup>();
+            Toast t = new Toast { go = toast, group = group, expiry = Time.unscaledTime + 6f };
             _toasts.Add(t);
-        }
-
-        GameObject Panel(string name, Transform parent, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot,
-            Vector2 position, Vector2 size)
-        {
-            GameObject go = new GameObject(name, typeof(RectTransform), typeof(Image));
-            go.transform.SetParent(parent, false);
-            RectTransform rect = go.GetComponent<RectTransform>();
-            rect.anchorMin = anchorMin;
-            rect.anchorMax = anchorMax;
-            rect.pivot = pivot;
-            rect.anchoredPosition = position;
-            rect.sizeDelta = size;
-            Image image = go.GetComponent<Image>();
-            image.color = Dark;
-            image.raycastTarget = true;
-            return go;
-        }
-
-        Text Label(Transform parent, string name, string content, int size, TextAnchor anchor, Color color,
-            Vector2 anchorMin, Vector2 anchorMax, Vector2 position, Vector2 sizeDelta, FontStyle style)
-        {
-            GameObject go = new GameObject(name, typeof(RectTransform), typeof(Text));
-            go.transform.SetParent(parent, false);
-            RectTransform rect = go.GetComponent<RectTransform>();
-            rect.anchorMin = anchorMin;
-            rect.anchorMax = anchorMax;
-            rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.anchoredPosition = position;
-            rect.sizeDelta = sizeDelta;
-            Text text = go.GetComponent<Text>();
-            text.font = _font;
-            text.text = content;
-            text.fontSize = size + FontSizeBoost;
-            text.fontStyle = style;
-            text.alignment = anchor;
-            text.color = color;
-            text.raycastTarget = false;
-            text.horizontalOverflow = HorizontalWrapMode.Wrap;
-            text.verticalOverflow = VerticalWrapMode.Truncate;
-            return text;
-        }
-
-        void MakeHudButton(string label, Transform parent, Vector2 anchor, Vector2 position, Action onClick, Color color)
-        {
-            MakeButton(label, parent, anchor, position, onClick, new Vector2(190f, 72f), color);
-        }
-
-        Button MakeWindowButton(string label, Transform parent, Vector2 anchor, Vector2 position, Action onClick,
-            Vector2 size, Color color, bool enabled = true)
-        {
-            return MakeButton(label, parent, anchor, position, onClick, size, color, enabled);
-        }
-
-        Button MakeButton(string label, Transform parent, Vector2 anchor, Vector2 position, Action onClick,
-            Vector2 size, Color color, bool enabled = true)
-        {
-            GameObject go = new GameObject(label + " Button", typeof(RectTransform), typeof(Image), typeof(Button));
-            go.transform.SetParent(parent, false);
-            RectTransform rect = go.GetComponent<RectTransform>();
-            rect.anchorMin = anchor;
-            rect.anchorMax = anchor;
-            rect.pivot = new Vector2(
-                anchor.x > 0.5f ? 1f : anchor.x < 0.5f ? 0f : 0.5f,
-                anchor.y > 0.5f ? 1f : anchor.y < 0.5f ? 0f : 0.5f);
-            rect.anchoredPosition = position;
-            rect.sizeDelta = size;
-            Image image = go.GetComponent<Image>();
-            image.color = enabled ? color : Disabled;
-            Button button = go.GetComponent<Button>();
-            button.interactable = enabled;
-            ColorBlock block = button.colors;
-            block.normalColor = Color.white;
-            block.highlightedColor = new Color(1.15f, 1.15f, 1.15f, 1f);
-            block.pressedColor = new Color(0.8f, 0.8f, 0.8f, 1f);
-            button.colors = block;
-            if (onClick != null) button.onClick.AddListener(delegate { onClick(); });
-            Label(go.transform, "Label", label, 19, TextAnchor.MiddleCenter,
-                enabled ? Color.white : DisabledText, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, FontStyle.Bold);
-            return button;
         }
 
         static void EnsureEventSystem()

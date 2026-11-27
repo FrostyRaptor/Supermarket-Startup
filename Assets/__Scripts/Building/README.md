@@ -82,7 +82,7 @@ build system.
    - `cost` is charged through `SimpleWallet` if assigned.
 6. Add the definition to `Assets/_ScriptableObjects/Building/PlaceableCatalog.asset`.
 
-The hotbar is generated from the catalog at runtime, so no UI wiring is required.
+The hotbar buttons are cloned from the authored `BuildMenu.prefab` hotbar-item template at runtime, so only the catalog and prefab reference need wiring.
 
 ## Grid conventions
 

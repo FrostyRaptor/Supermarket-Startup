@@ -31,6 +31,9 @@ namespace Supermarket.Store
         public const string ButcherKey = "butcher_equipment";
         public const string BakeryKey = "bakery_equipment";
         public const string DeliKey = "deli_equipment";
+        public const string ButcherStorageKey = "butcher_storage";
+        public const string BakeryStorageKey = "bakery_storage";
+        public const string DeliStorageKey = "deli_storage";
 
         public static string EquipmentKey(StoreSectionType type)
         {
@@ -66,6 +69,9 @@ namespace Supermarket.Store
         public UpgradeProfile ButcherProfile;
         public UpgradeProfile BakeryProfile;
         public UpgradeProfile DeliProfile;
+        public UpgradeProfile ButcherStorageProfile;
+        public UpgradeProfile BakeryStorageProfile;
+        public UpgradeProfile DeliStorageProfile;
 
         public UpgradeProfile ProfileFor(StoreSectionType type)
         {

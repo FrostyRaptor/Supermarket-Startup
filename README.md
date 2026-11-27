@@ -18,7 +18,9 @@ definitions, level materials and scene references, run:
 
 All economy, wage, demand, license, unlock and upgrade values live in the
 ScriptableObjects under `Assets/_ScriptableObjects/Game/` and can be tuned in
-the Inspector.
+the Inspector. Setup also wires the employee wage config, the section config,
+and the separate loading-zone, shelf, equipment and per-section storage upgrade
+profiles into the scene.
 
 The build grid covers the whole store floor except the bakery, butcher, deli,
 storage and alcohol sections. Only storage and deli have physical walls; the
@@ -58,15 +60,26 @@ See `Assets/__Scripts/Building/README.md` for the layout save format.
 
 ## HUD
 
+The HUD displays are authored uGUI Canvas prefabs in `Assets/_Prefabs/UI/`
+(`TycoonHUD.prefab` and `BuildMenu.prefab`). The controllers keep all text
+formatting and state logic; they instantiate the prefabs at runtime and fill
+the authored labels/buttons. The store manager's Employees, Upgrades and Orders
+tab bodies are ordinary GameObjects inside `TycoonHUD.prefab`; open that prefab
+in the Unity Editor to move, restyle, add to, or rewire them. Selecting a tab
+shows one static body and hides the other two; no tab rows are generated at
+runtime. `Tools > Supermarket > UI > Create Authored Canvas Prefabs` only
+creates missing prefabs and validates the HUD — it never overwrites manual
+Canvas edits.
+
 - Top-left: business day and in-game time of day (`h:mm AM/PM`) on one line.
 - Top-right: current balance with net dollars per real hour underneath.
 - Bottom-left: **Store** button opening a tabbed manager:
-  - **Employees**: hiring/firing grouped by store section.
-  - **Upgrades**: section purchases/license plus each section's upgrade paths; locked sections show grayed-out upgrades.
-  - **Orders**: current order manager.
+  - **Employees**: daily-wage total and six hire/fire rows grouped under Checkout, Storage, Butcher, Bakery and Deli headings. Each row shows the role, current/maximum headcount, that role's configured **daily** wage, and `−`/`+` buttons. Wages come from `EmployeeConfig`.
+  - **Upgrades**: five sections — Storage, Butcher, Bakery, Deli and Alcohol. Each section title shows its unlock price to the left of a right-side **Buy** button. Storage has the add-loading-zone row, three loading-zone upgrades and the storage-shelf upgrade; Butcher/Bakery/Deli each have an equipment and a separate storage upgrade; Alcohol has the liquor-license status (`Complete`, `In Progress`, `Incomplete`), two filing rows, a section-purchase row and rows for placed alcohol shelves. Locked sections, unbuilt loading zones and unavailable actions are grayed out/disabled.
+  - **Orders**: cart-style ordering. Each catalog product shows its unit cost, suggested restock quantity, an editable order-amount box and an **Order** button that adds to the cart. A top summary shows `Order Suggested Amounts` with the running total and **Buy** submit button; a right-aligned bottom summary repeats the total and submit button. Totals turn green when affordable and red when not, and products that cannot be stored or sold yet (for example alcohol before the license/section is unlocked) are grayed out.
 - Bottom-right: build mode button.
 
 ## Tests
 
-- EditMode tests: `Assets/Tests/EditMode/` (`Supermarket.Tests.EditMode`).
+- EditMode tests: `Assets/Tests/EditMode/` (`Supermarket.Tests.EditMode`). `AuthoredUITests` guards the authored HUD/Build Menu prefab references, section/license display helpers, configured employee wages, order totals and product-order gating.
 - Run them from `Window > General > Test Runner > EditMode`.

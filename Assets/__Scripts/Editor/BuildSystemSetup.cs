@@ -198,6 +198,8 @@ namespace Supermarket.EditorTools
       menu.catalog = catalog;
       menu.controller = controller;
       menu.wallet = wallet;
+      AuthoredUICreator.CreatePrefabs(false);
+      menu.buildMenuPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(AuthoredUICreator.BuildMenuPrefabPath);
       controller.menu = menu;
 
       EnsureSectionVisuals();

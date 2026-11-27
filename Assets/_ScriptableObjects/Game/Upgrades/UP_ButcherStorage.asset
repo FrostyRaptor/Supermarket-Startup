@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30a29ac49d16d4402ae9f46c265a335b, type: 3}
+  m_Name: UP_ButcherStorage
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Config.UpgradeProfile
+  id: butcherstorage
+  displayName: Butcher Storage
+  capacityByLevel: 140000001e0000002d000000410000005a000000
+  upgradeCostByLevel: 00000000f0000000b8010000f8020000b0040000
+  efficiencyByLevel:
+  - 1
+  - 1.3
+  - 1.7
+  - 2.2
+  - 3
+  yieldByLevel: 0100000002000000030000000400000005000000
+  levelMaterials:
+  - {fileID: 2100000, guid: 72e8bdc8d7e1b4e6b9dc179dc5c6c0cd, type: 2}
+  - {fileID: 2100000, guid: d4901df30196c452b9a52ca6771b703f, type: 2}
+  - {fileID: 2100000, guid: 8434bcbec55064c0299f4e9f5b30ca16, type: 2}
+  - {fileID: 2100000, guid: 65f95775e7bf1498fa7bd4fb8241c199, type: 2}
+  - {fileID: 2100000, guid: 6e6b9c68cf32c41ef822a05401bf8459, type: 2}
