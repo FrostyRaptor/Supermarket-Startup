@@ -15,7 +15,7 @@ MonoBehaviour:
   id: freezer_2x1
   displayName: Freezer 2x1
   category: 0
-  prefab: {fileID: 2739961716754111983, guid: 5ad4dfdec2d48444eb567677ba1e903b, type: 3}
+  prefab: {fileID: 1701071247445495312, guid: e881130171842474aac12b0957bfefea, type: 3}
   footprint: {x: 2, y: 1}
   pivotOffset: {x: 0, y: 0, z: 0}
   cost: 240

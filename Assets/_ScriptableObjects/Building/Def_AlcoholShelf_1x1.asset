@@ -15,7 +15,7 @@ MonoBehaviour:
   id: alcohol_shelf_1x1
   displayName: Alcohol Shelf 1x1
   category: 0
-  prefab: {fileID: 6381355011551937275, guid: a8684cc7c0bfa48aa9761fa60300f968, type: 3}
+  prefab: {fileID: 371202001899719780, guid: 7ff82e75000a44e6c86b80c4a9282b49, type: 3}
   footprint: {x: 1, y: 1}
   pivotOffset: {x: 0, y: 0, z: 0}
   cost: 220

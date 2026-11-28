@@ -257,6 +257,11 @@ namespace Supermarket.Core
             if (license != null) license.Restore(LicenseStage.NotStarted, 0, false);
             if (notices != null) notices.Clear();
             if (grid != null) grid.ClearAll();
+
+            // A new game starts from the shipped default store layout.
+            BuildLayoutStore layoutStore = FindFirstObjectByType<BuildLayoutStore>();
+            if (layoutStore != null) layoutStore.ApplyDefaultLayout(true);
+
             if (save != null) save.Save();
         }
     }

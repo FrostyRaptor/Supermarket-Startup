@@ -15,7 +15,7 @@ MonoBehaviour:
   id: shelf_2x1
   displayName: Shelf 2x1
   category: 0
-  prefab: {fileID: 6630970779580031546, guid: 9f2af2b50535d4d69bf7b9195f02a732, type: 3}
+  prefab: {fileID: 2486818293982592734, guid: 111591db763d146debd618e21663b5f4, type: 3}
   footprint: {x: 2, y: 1}
   pivotOffset: {x: 0, y: 0, z: 0}
   cost: 120

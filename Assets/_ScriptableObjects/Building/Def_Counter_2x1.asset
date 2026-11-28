@@ -15,7 +15,7 @@ MonoBehaviour:
   id: counter_2x1
   displayName: Counter 2x1
   category: 0
-  prefab: {fileID: 1330572779397377745, guid: 1a48281a6e2df4d24be21a293d28d767, type: 3}
+  prefab: {fileID: 1738809748303067654, guid: 0c03a7ce2e99b4779ba7e29ecf3a6d71, type: 3}
   footprint: {x: 2, y: 1}
   pivotOffset: {x: 0, y: 0, z: 0}
   cost: 200

@@ -10,8 +10,8 @@ using UnityEngine.SceneManagement;
 namespace Supermarket.EditorTools
 {
   /// <summary>
-  /// One-click bootstrap for the build system: creates materials, placeholder
-  /// placeables, definitions, the catalog, and wires a BuildSystem object into
+  /// One-click bootstrap for the build system: creates materials, uses the
+  /// imported supermarket models, definitions, the catalog, and wires a BuildSystem object into
   /// the scene. Safe to run more than once; existing assets are not overwritten.
   /// </summary>
   public static class BuildSystemSetup
@@ -19,6 +19,7 @@ namespace Supermarket.EditorTools
     const string ScenePath = "Assets/_Scenes/__Scene_0.unity";
     const string MaterialFolder = "Assets/_Materials";
     const string PrefabFolder = "Assets/_Prefabs/Placeables";
+    const string ModelPrefabFolder = "Assets/_Prefabs/Placeables";
     const string DataFolder = "Assets/_ScriptableObjects/Building";
     const float CellSize = 1f;
 
@@ -80,20 +81,9 @@ namespace Supermarket.EditorTools
         "Standard",
         new Color(0.30f, 0.31f, 0.34f));
 
-      Material plantPot = EnsureMaterial(
-        MaterialFolder + "/Mat_PlantPot.mat",
-        "Standard",
-        new Color(0.48f, 0.30f, 0.22f));
-
-      Material plantLeaf = EnsureMaterial(
-        MaterialFolder + "/Mat_PlantLeaf.mat",
-        "Standard",
-        new Color(0.24f, 0.60f, 0.30f));
-
-      GameObject shelfPrefab = EnsureShelfPrefab(shelf, shelfFrame);
-      GameObject counterPrefab = EnsureCounterPrefab(counter, counterTop);
-      GameObject plantPrefab = EnsurePlantPrefab(plantPot, plantLeaf);
-      GameObject checkoutLanePrefab = EnsureCheckoutLanePrefab(counter, counterTop);
+      GameObject shelfPrefab = LoadModelPrefab("Shelf_2x1");
+      GameObject counterPrefab = LoadModelPrefab("Counter_2x1");
+      GameObject checkoutLanePrefab = LoadModelPrefab("Checkout_Lane_4x3");
 
       UpgradeProfile checkoutLaneProfile = AssetDatabase.LoadAssetAtPath<UpgradeProfile>(
         "Assets/_ScriptableObjects/Game/Upgrades/UP_CheckoutLane.asset");
@@ -118,16 +108,6 @@ namespace Supermarket.EditorTools
         PlaceableArea.General,
         null);
 
-      PlaceableDefinition plantDefinition = EnsureDefinition(
-        DataFolder + "/Def_Plant_1x1.asset",
-        "plant_1x1",
-        "Plant 1x1",
-        plantPrefab,
-        Vector2Int.one,
-        40,
-        PlaceableArea.General,
-        null);
-
       // Plan: checkout lanes are 4x3 and have five upgrade levels.
       PlaceableDefinition checkoutLaneDefinition = EnsureDefinition(
         DataFolder + "/Def_CheckoutLane_4x3.asset",
@@ -140,7 +120,7 @@ namespace Supermarket.EditorTools
         checkoutLaneProfile);
 
       PlaceableCatalog catalog = EnsureCatalog(
-        shelfDefinition, counterDefinition, plantDefinition, checkoutLaneDefinition);
+        shelfDefinition, counterDefinition, checkoutLaneDefinition);
 
       Scene scene = OpenTargetScene();
       if (!scene.IsValid())
@@ -672,33 +652,16 @@ namespace Supermarket.EditorTools
       return SavePrefab(root, path);
     }
 
-    static GameObject EnsurePlantPrefab(Material pot, Material leaves)
+    static GameObject LoadModelPrefab(string name)
     {
-      string path = PrefabFolder + "/Plant_1x1.prefab";
-      GameObject existing = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-      if (existing != null) return existing;
-
-      GameObject root = new GameObject("Plant_1x1");
-      root.AddComponent<PlacedObject>();
-      BoxCollider box = root.AddComponent<BoxCollider>();
-      box.center = new Vector3(0f, 0.6f, 0f);
-      box.size = new Vector3(0.7f, 1.2f, 0.7f);
-
-      GameObject potObject = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-      potObject.name = "Pot";
-      potObject.transform.SetParent(root.transform, false);
-      potObject.transform.localPosition = new Vector3(0f, 0.2f, 0f);
-      potObject.transform.localScale = new Vector3(0.45f, 0.2f, 0.45f);
-      StripColliderAndSetMaterial(potObject, pot);
-
-      GameObject leafObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-      leafObject.name = "Leaves";
-      leafObject.transform.SetParent(root.transform, false);
-      leafObject.transform.localPosition = new Vector3(0f, 0.75f, 0f);
-      leafObject.transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
-      StripColliderAndSetMaterial(leafObject, leaves);
-
-      return SavePrefab(root, path);
+      string path = ModelPrefabFolder + "/" + name + ".prefab";
+      GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+      if (prefab == null)
+      {
+        Debug.LogWarning("BuildSystemSetup: missing imported model prefab " + path +
+                         ". Run Tools > Supermarket Assets > Generate Materials and Prefabs.");
+      }
+      return prefab;
     }
 
     static GameObject SavePrefab(GameObject root, string path)

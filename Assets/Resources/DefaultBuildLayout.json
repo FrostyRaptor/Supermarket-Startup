@@ -1,0 +1,2810 @@
+{
+  "version": 1,
+  "scene": "Assets/_Scenes/__Scene_0.unity",
+  "gridSize": {
+    "width": 96,
+    "height": 256
+  },
+  "items": [
+    {
+      "id": "obj_001",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 20,
+        "z": 1
+      },
+      "size": {
+        "width": 4,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_002",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 25,
+        "z": 1
+      },
+      "size": {
+        "width": 4,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_003",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 30,
+        "z": 1
+      },
+      "size": {
+        "width": 4,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_004",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 35,
+        "z": 1
+      },
+      "size": {
+        "width": 4,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_005",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 40,
+        "z": 1
+      },
+      "size": {
+        "width": 4,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_006",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 45,
+        "z": 1
+      },
+      "size": {
+        "width": 4,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_007",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 50,
+        "z": 1
+      },
+      "size": {
+        "width": 4,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_008",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 55,
+        "z": 1
+      },
+      "size": {
+        "width": 4,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_009",
+      "prefabId": "counter_2x1",
+      "category": "counter",
+      "gridOrigin": {
+        "x": 17,
+        "z": 2
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_010",
+      "prefabId": "counter_2x1",
+      "category": "counter",
+      "gridOrigin": {
+        "x": 17,
+        "z": 5
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_011",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 6
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_012",
+      "prefabId": "counter_2x1",
+      "category": "counter",
+      "gridOrigin": {
+        "x": 17,
+        "z": 8
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_013",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 10
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_014",
+      "prefabId": "freezer_6x3",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 48,
+        "z": 10
+      },
+      "size": {
+        "width": 6,
+        "depth": 3
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_015",
+      "prefabId": "counter_2x1",
+      "category": "counter",
+      "gridOrigin": {
+        "x": 17,
+        "z": 11
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_016",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 11
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_017",
+      "prefabId": "counter_2x1",
+      "category": "counter",
+      "gridOrigin": {
+        "x": 17,
+        "z": 14
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_018",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 16
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_019",
+      "prefabId": "counter_2x1",
+      "category": "counter",
+      "gridOrigin": {
+        "x": 17,
+        "z": 17
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_020",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 18
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_021",
+      "prefabId": "freezer_6x3",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 48,
+        "z": 18
+      },
+      "size": {
+        "width": 6,
+        "depth": 3
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_022",
+      "prefabId": "counter_2x1",
+      "category": "counter",
+      "gridOrigin": {
+        "x": 17,
+        "z": 20
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_023",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 21
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_024",
+      "prefabId": "counter_2x1",
+      "category": "counter",
+      "gridOrigin": {
+        "x": 17,
+        "z": 23
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_025",
+      "prefabId": "counter_2x1",
+      "category": "counter",
+      "gridOrigin": {
+        "x": 17,
+        "z": 26
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_026",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 26
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_027",
+      "prefabId": "freezer_6x3",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 48,
+        "z": 26
+      },
+      "size": {
+        "width": 6,
+        "depth": 3
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_028",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 26
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_029",
+      "prefabId": "counter_2x1",
+      "category": "counter",
+      "gridOrigin": {
+        "x": 17,
+        "z": 29
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_030",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 31
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_031",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 34
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_032",
+      "prefabId": "freezer_6x3",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 48,
+        "z": 34
+      },
+      "size": {
+        "width": 6,
+        "depth": 3
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_033",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 36
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_034",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 41
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_035",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 42
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_036",
+      "prefabId": "freezer_2x1",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 30,
+        "z": 48
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_037",
+      "prefabId": "freezer_2x1",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 30,
+        "z": 51
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_038",
+      "prefabId": "freezer_2x1",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 30,
+        "z": 54
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_039",
+      "prefabId": "freezer_2x1",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 30,
+        "z": 57
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_040",
+      "prefabId": "freezer_2x1",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 30,
+        "z": 60
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_041",
+      "prefabId": "freezer_2x1",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 30,
+        "z": 63
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_042",
+      "prefabId": "freezer_2x1",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 30,
+        "z": 66
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_043",
+      "prefabId": "freezer_2x1",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 30,
+        "z": 69
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_044",
+      "prefabId": "freezer_2x1",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 30,
+        "z": 72
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_045",
+      "prefabId": "freezer_2x1",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 30,
+        "z": 75
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_046",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 76
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_047",
+      "prefabId": "checkout_lane_4x3",
+      "category": "checkout",
+      "gridOrigin": {
+        "x": 7,
+        "z": 77
+      },
+      "size": {
+        "width": 4,
+        "depth": 3
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_048",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 80
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_049",
+      "prefabId": "counter_2x1",
+      "category": "counter",
+      "gridOrigin": {
+        "x": 32,
+        "z": 80
+      },
+      "size": {
+        "width": 2,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_050",
+      "prefabId": "counter_2x1",
+      "category": "counter",
+      "gridOrigin": {
+        "x": 34,
+        "z": 80
+      },
+      "size": {
+        "width": 2,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_051",
+      "prefabId": "counter_2x1",
+      "category": "counter",
+      "gridOrigin": {
+        "x": 36,
+        "z": 80
+      },
+      "size": {
+        "width": 2,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_052",
+      "prefabId": "counter_2x1",
+      "category": "counter",
+      "gridOrigin": {
+        "x": 38,
+        "z": 80
+      },
+      "size": {
+        "width": 2,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_053",
+      "prefabId": "checkout_lane_4x3",
+      "category": "checkout",
+      "gridOrigin": {
+        "x": 8,
+        "z": 83
+      },
+      "size": {
+        "width": 4,
+        "depth": 3
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_054",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 84
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_055",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 86
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_056",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 40,
+        "z": 86
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_057",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 86
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_058",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 88
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_059",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 91
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_060",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 92
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_061",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 92
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_062",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 40,
+        "z": 92
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_063",
+      "prefabId": "checkout_lane_4x3",
+      "category": "checkout",
+      "gridOrigin": {
+        "x": 7,
+        "z": 96
+      },
+      "size": {
+        "width": 4,
+        "depth": 3
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_064",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 96
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_065",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 96
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_066",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 98
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_067",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 40,
+        "z": 98
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_068",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 100
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_069",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 101
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_070",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 104
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_071",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 104
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_072",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 40,
+        "z": 104
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_073",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 106
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_074",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 108
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_075",
+      "prefabId": "checkout_lane_4x3",
+      "category": "checkout",
+      "gridOrigin": {
+        "x": 7,
+        "z": 110
+      },
+      "size": {
+        "width": 4,
+        "depth": 3
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_076",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 110
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_077",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 40,
+        "z": 110
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_078",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 111
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_079",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 112
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_080",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 116
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_081",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 116
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_082",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 40,
+        "z": 116
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_083",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 116
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_084",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 120
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_085",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 121
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_086",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 122
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_087",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 40,
+        "z": 122
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_088",
+      "prefabId": "checkout_lane_4x3",
+      "category": "checkout",
+      "gridOrigin": {
+        "x": 7,
+        "z": 124
+      },
+      "size": {
+        "width": 4,
+        "depth": 3
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_089",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 124
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_090",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 126
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_091",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 128
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_092",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 128
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_093",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 40,
+        "z": 128
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_094",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 131
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_095",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 132
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_096",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 134
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_097",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 40,
+        "z": 134
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_098",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 136
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_099",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 136
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_100",
+      "prefabId": "checkout_lane_4x3",
+      "category": "checkout",
+      "gridOrigin": {
+        "x": 7,
+        "z": 138
+      },
+      "size": {
+        "width": 4,
+        "depth": 3
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_101",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 140
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_102",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 141
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_103",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 144
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_104",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 146
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_105",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 148
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_106",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 148
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_107",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 40,
+        "z": 148
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_108",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 151
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_109",
+      "prefabId": "checkout_lane_4x3",
+      "category": "checkout",
+      "gridOrigin": {
+        "x": 7,
+        "z": 152
+      },
+      "size": {
+        "width": 4,
+        "depth": 3
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_110",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 152
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_111",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 154
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_112",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 40,
+        "z": 154
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_113",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 156
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_114",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 156
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_115",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 160
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_116",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 160
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_117",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 40,
+        "z": 160
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_118",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 161
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_119",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 164
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_120",
+      "prefabId": "checkout_lane_4x3",
+      "category": "checkout",
+      "gridOrigin": {
+        "x": 7,
+        "z": 166
+      },
+      "size": {
+        "width": 4,
+        "depth": 3
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_121",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 166
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_122",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 40,
+        "z": 166
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_123",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 166
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_124",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 17,
+        "z": 168
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_125",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 171
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_126",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 172
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_127",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 40,
+        "z": 172
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_128",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 176
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_129",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 178
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_130",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 40,
+        "z": 178
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_131",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 181
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_132",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 184
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_133",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 40,
+        "z": 184
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_134",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 186
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_135",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 190
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_136",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 40,
+        "z": 190
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_137",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 191
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_138",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 194
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_139",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 196
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_140",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 196
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_141",
+      "prefabId": "gondola_14x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 40,
+        "z": 196
+      },
+      "size": {
+        "width": 14,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_142",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 196
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_143",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 198
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_144",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 200
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_145",
+      "prefabId": "freezer_4x2",
+      "category": "freezer",
+      "gridOrigin": {
+        "x": 61,
+        "z": 201
+      },
+      "size": {
+        "width": 2,
+        "depth": 4
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_146",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 202
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_147",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 204
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_148",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 206
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_149",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 208
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_150",
+      "prefabId": "cooler_2x1",
+      "category": "cooler",
+      "gridOrigin": {
+        "x": 46,
+        "z": 208
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_151",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 210
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_152",
+      "prefabId": "gondola_16x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 210
+      },
+      "size": {
+        "width": 16,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_153",
+      "prefabId": "cooler_2x1",
+      "category": "cooler",
+      "gridOrigin": {
+        "x": 46,
+        "z": 211
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_154",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 212
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_155",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 214
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_156",
+      "prefabId": "cooler_2x1",
+      "category": "cooler",
+      "gridOrigin": {
+        "x": 46,
+        "z": 214
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_157",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 216
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_158",
+      "prefabId": "gondola_16x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 217
+      },
+      "size": {
+        "width": 16,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_159",
+      "prefabId": "cooler_2x1",
+      "category": "cooler",
+      "gridOrigin": {
+        "x": 46,
+        "z": 217
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_160",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 218
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_161",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 220
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_162",
+      "prefabId": "cooler_2x1",
+      "category": "cooler",
+      "gridOrigin": {
+        "x": 46,
+        "z": 220
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_163",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 222
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_164",
+      "prefabId": "cooler_2x1",
+      "category": "cooler",
+      "gridOrigin": {
+        "x": 46,
+        "z": 223
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_165",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 224
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_166",
+      "prefabId": "gondola_16x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 224
+      },
+      "size": {
+        "width": 16,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_167",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 226
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_168",
+      "prefabId": "cooler_2x1",
+      "category": "cooler",
+      "gridOrigin": {
+        "x": 46,
+        "z": 226
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_169",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 228
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_170",
+      "prefabId": "cooler_2x1",
+      "category": "cooler",
+      "gridOrigin": {
+        "x": 46,
+        "z": 229
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_171",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 230
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_172",
+      "prefabId": "gondola_16x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 231
+      },
+      "size": {
+        "width": 16,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_173",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 232
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_174",
+      "prefabId": "cooler_2x1",
+      "category": "cooler",
+      "gridOrigin": {
+        "x": 46,
+        "z": 232
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_175",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 234
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_176",
+      "prefabId": "cooler_2x1",
+      "category": "cooler",
+      "gridOrigin": {
+        "x": 46,
+        "z": 235
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_177",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 236
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_178",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 238
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_179",
+      "prefabId": "gondola_16x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 238
+      },
+      "size": {
+        "width": 16,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_180",
+      "prefabId": "cooler_2x1",
+      "category": "cooler",
+      "gridOrigin": {
+        "x": 46,
+        "z": 238
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_181",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 240
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_182",
+      "prefabId": "cooler_2x1",
+      "category": "cooler",
+      "gridOrigin": {
+        "x": 46,
+        "z": 241
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_183",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 242
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_184",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 244
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_185",
+      "prefabId": "cooler_2x1",
+      "category": "cooler",
+      "gridOrigin": {
+        "x": 46,
+        "z": 244
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_186",
+      "prefabId": "gondola_16x2",
+      "category": "gondola",
+      "gridOrigin": {
+        "x": 22,
+        "z": 245
+      },
+      "size": {
+        "width": 16,
+        "depth": 2
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_187",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 246
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_188",
+      "prefabId": "cooler_2x1",
+      "category": "cooler",
+      "gridOrigin": {
+        "x": 46,
+        "z": 247
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_189",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 248
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_190",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 250
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_191",
+      "prefabId": "cooler_2x1",
+      "category": "cooler",
+      "gridOrigin": {
+        "x": 46,
+        "z": 250
+      },
+      "size": {
+        "width": 1,
+        "depth": 2
+      },
+      "rotation": 90
+    },
+    {
+      "id": "obj_192",
+      "prefabId": "alcohol_shelf_1x1",
+      "category": "alcohol",
+      "gridOrigin": {
+        "x": 17,
+        "z": 252
+      },
+      "size": {
+        "width": 1,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_193",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 20,
+        "z": 254
+      },
+      "size": {
+        "width": 2,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_194",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 23,
+        "z": 254
+      },
+      "size": {
+        "width": 2,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_195",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 26,
+        "z": 254
+      },
+      "size": {
+        "width": 2,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_196",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 29,
+        "z": 254
+      },
+      "size": {
+        "width": 2,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_197",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 32,
+        "z": 254
+      },
+      "size": {
+        "width": 2,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_198",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 35,
+        "z": 254
+      },
+      "size": {
+        "width": 2,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_199",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 38,
+        "z": 254
+      },
+      "size": {
+        "width": 2,
+        "depth": 1
+      },
+      "rotation": 0
+    },
+    {
+      "id": "obj_200",
+      "prefabId": "shelf_2x1",
+      "category": "shelf",
+      "gridOrigin": {
+        "x": 41,
+        "z": 254
+      },
+      "size": {
+        "width": 2,
+        "depth": 1
+      },
+      "rotation": 0
+    }
+  ]
+}

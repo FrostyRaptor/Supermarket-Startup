@@ -28,6 +28,7 @@ namespace Supermarket.Editor
         const string ConfigFolder = "Assets/_ScriptableObjects/Game";
         const string UpgradeFolder = "Assets/_ScriptableObjects/Game/Upgrades";
         const string PlaceableFolder = "Assets/_Prefabs/Placeables";
+        const string ModelPrefabFolder = "Assets/_Prefabs/Placeables";
         const string LevelMaterialFolder = "Assets/_Materials/UpgradeLevels";
 
         [MenuItem("Tools/Supermarket/Final Game/Setup Final Game")]
@@ -53,7 +54,6 @@ namespace Supermarket.Editor
             BuildProductCatalog(catalog);
             BuildSectionConfig(sectionConfig);
 
-            UpgradeProfile shelf = Upgrade("Shelf", "Shelf", new[] { 8, 12, 18, 26, 36 }, new[] { 0, 180, 340, 620, 1000 });
             UpgradeProfile cooler = Upgrade("Cooler", "Cooler", new[] { 12, 18, 26, 36, 50 }, new[] { 0, 240, 450, 800, 1300 });
             UpgradeProfile freezer = Upgrade("Freezer", "Freezer", new[] { 10, 15, 22, 32, 44 }, new[] { 0, 220, 420, 760, 1250 });
             UpgradeProfile alcoholShelf = Upgrade("AlcoholShelf", "Alcohol Shelf", new[] { 8, 12, 18, 26, 36 }, new[] { 0, 220, 400, 700, 1100 });
@@ -80,14 +80,10 @@ namespace Supermarket.Editor
             EditorUtility.SetDirty(bakery);
             EditorUtility.SetDirty(deli);
 
-            Material wood = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Materials/Mat_Shelf.mat");
-            Material frame = AssetDatabase.LoadAssetAtPath<Material>("Assets/_Materials/Mat_ShelfFrame.mat");
-            GameObject shelfPrefab = EnsureBoxPrefab("Shelf_1x1", new Vector3(0.9f, 1.8f, 0.9f), wood, frame);
-            GameObject coolerPrefab = EnsureBoxPrefab("Cooler_2x1", new Vector3(1.9f, 2f, 0.9f), frame, wood);
-            GameObject freezerPrefab = EnsureBoxPrefab("Freezer_2x1", new Vector3(1.9f, 2f, 0.9f), frame, wood);
-            GameObject alcoholPrefab = EnsureBoxPrefab("AlcoholShelf_1x1", new Vector3(0.9f, 1.8f, 0.9f), wood, frame);
-            GameObject checkoutLanePrefab = EnsureBoxPrefab(
-                "CheckoutLane_4x3", new Vector3(3.9f, 0.9f, 2.9f), frame, wood);
+            GameObject coolerPrefab = LoadModelPrefab("Cooler_2x1");
+            GameObject freezerPrefab = LoadModelPrefab("Freezer_2x1");
+            GameObject alcoholPrefab = LoadModelPrefab("Alcohol_Shelf_1x1");
+            GameObject checkoutLanePrefab = LoadModelPrefab("Checkout_Lane_4x3");
 
             PlaceableCatalog placeables = AssetDatabase.LoadAssetAtPath<PlaceableCatalog>("Assets/_ScriptableObjects/Building/PlaceableCatalog.asset");
             if (placeables == null)
@@ -95,7 +91,6 @@ namespace Supermarket.Editor
                 Debug.LogError("PlaceableCatalog asset is missing. Run Tools > Supermarket > Build System > Setup Scene first.");
                 return;
             }
-            EnsureDefinition("Def_Shelf_1x1", "shelf_1x1", "Shelf 1x1", shelfPrefab, new Vector2Int(1, 1), 180, shelf, placeables);
             EnsureDefinition("Def_Cooler_2x1", "cooler_2x1", "Cooler 2x1", coolerPrefab, new Vector2Int(2, 1), 260, cooler, placeables);
             EnsureDefinition("Def_Freezer_2x1", "freezer_2x1", "Freezer 2x1", freezerPrefab, new Vector2Int(2, 1), 240, freezer, placeables);
             EnsureDefinition("Def_AlcoholShelf_1x1", "alcohol_shelf_1x1", "Alcohol Shelf 1x1", alcoholPrefab, new Vector2Int(1, 1), 220, alcoholShelf, placeables);
@@ -385,6 +380,18 @@ namespace Supermarket.Editor
             }
             AssetDatabase.SaveAssets();
             return materials;
+        }
+
+        static GameObject LoadModelPrefab(string name)
+        {
+            string path = ModelPrefabFolder + "/" + name + ".prefab";
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (prefab == null)
+            {
+                Debug.LogWarning("FinalGameSetup: missing imported model prefab " + path +
+                    ". Run Tools > Supermarket Assets > Generate Materials and Prefabs.");
+            }
+            return prefab;
         }
 
         static GameObject EnsureBoxPrefab(string name, Vector3 size, Material body, Material frame)

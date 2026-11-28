@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b08581589f2a4f28a33c9e5758e14ea, type: 3}
+  m_Name: Def_Gondola_14x2
+  m_EditorClassIdentifier: Supermarket.Runtime::Supermarket.Building.PlaceableDefinition
+  id: gondola_14x2
+  displayName: Gondola 14x2
+  category: 0
+  prefab: {fileID: 4998492386407613395, guid: 8b59bc45ab6f34d349adad9fcafb4e9a, type: 3}
+  footprint: {x: 14, y: 2}
+  pivotOffset: {x: 0, y: 0, z: 0}
+  cost: 100
+  allowedArea: 0
+  rotatable: 1
+  icon: {fileID: 0}
+  upgradeProfile: {fileID: 0}

@@ -100,8 +100,8 @@ namespace Supermarket.Building
 
       return new List<BuildExclusionZone>
       {
-        // Columns 0-1, rows 0-1: corner enclosed by the bakery walls.
-        new BuildExclusionZone(StoreSectionType.Bakery, left, front, x2, bakeryBack),
+        // Column 0, rows 0-1: corner enclosed by the bakery walls.
+        new BuildExclusionZone(StoreSectionType.Bakery, left, front, x1, bakeryBack),
 
         // Columns 4-5, rows 0-3: corner enclosed by the butcher walls.
         new BuildExclusionZone(StoreSectionType.Butcher, x4, front, right, butcherBack),

@@ -15,7 +15,7 @@ MonoBehaviour:
   id: cooler_2x1
   displayName: Cooler 2x1
   category: 0
-  prefab: {fileID: 3356495141275808881, guid: df116b7fcd07d4d95814a8305318adfb, type: 3}
+  prefab: {fileID: 2980426993431232800, guid: 8e75402be723d47febdd4b7571fc6ff8, type: 3}
   footprint: {x: 2, y: 1}
   pivotOffset: {x: 0, y: 0, z: 0}
   cost: 260

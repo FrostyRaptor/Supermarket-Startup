@@ -14,6 +14,7 @@ namespace Supermarket.Building
   {
     public const string DefaultFileName = "build-layout.json";
     public const int CurrentVersion = 1;
+    const string DefaultLayoutResource = "DefaultBuildLayout";
 
     const string KeyPrefix = "supermarket.build-layout.";
 
@@ -25,6 +26,10 @@ namespace Supermarket.Building
     [SerializeField] string fileName = DefaultFileName;
     public bool loadOnStart = true;
     public bool saveOnChange = true;
+
+    [Header("Default Layout")]
+    [Tooltip("Optional default layout TextAsset. When unset, Resources/DefaultBuildLayout is used.")]
+    public TextAsset defaultLayout;
 
     [Header("Optional Services")]
     [Tooltip("Optional. A component implementing IBuildLayoutStorage for custom backends/slots.")]
@@ -78,7 +83,7 @@ namespace Supermarket.Building
       if (loadOnStart)
       {
         if (catalog == null) Debug.LogWarning("BuildLayoutStore: no catalog assigned; skipping layout load.");
-        else Load();
+        else if (!Load()) ApplyDefaultLayout(true);
       }
 
       if (grid != null)
@@ -248,6 +253,110 @@ namespace Supermarket.Building
 
       _dirty = false;
       return true;
+    }
+
+    /// <summary>
+    /// Replaces the current plot with the shipped default layout. Used when a
+    /// player starts a new game and there is no saved layout to restore.
+    /// </summary>
+    public bool ApplyDefaultLayout(bool persist = true)
+    {
+      if (grid == null || catalog == null) return false;
+
+      TextAsset asset = defaultLayout != null
+        ? defaultLayout
+        : Resources.Load<TextAsset>(DefaultLayoutResource);
+      if (asset == null || string.IsNullOrEmpty(asset.text))
+      {
+        Debug.LogWarning("BuildLayoutStore: default layout TextAsset is missing.");
+        return false;
+      }
+
+      DefaultBuildLayoutFile layout;
+      try
+      {
+        layout = JsonUtility.FromJson<DefaultBuildLayoutFile>(asset.text);
+      }
+      catch (Exception e)
+      {
+        Debug.LogWarning("BuildLayoutStore: could not parse default layout: " + e.Message);
+        return false;
+      }
+
+      if (layout == null || layout.items == null)
+      {
+        Debug.LogWarning("BuildLayoutStore: default layout is empty or malformed.");
+        return false;
+      }
+
+      if (layout.version != CurrentVersion)
+      {
+        Debug.LogWarning(string.Format(
+          "BuildLayoutStore: unsupported default layout version {0} (expected {1}).",
+          layout.version, CurrentVersion));
+        return false;
+      }
+
+      if (layout.gridSize != null &&
+          (layout.gridSize.width != grid.Width || layout.gridSize.height != grid.Depth))
+      {
+        Debug.LogWarning(string.Format(
+          "BuildLayoutStore: default layout grid {0}x{1} does not match build grid {2}x{3}.",
+          layout.gridSize.width, layout.gridSize.height, grid.Width, grid.Depth));
+        return false;
+      }
+
+      int applied = 0;
+      _loading = true;
+      try
+      {
+        grid.ClearAll();
+
+        for (int i = 0; i < layout.items.Count; i++)
+        {
+          DefaultBuildLayoutItem item = layout.items[i];
+          if (item == null || item.gridOrigin == null) continue;
+
+          PlaceableDefinition definition = catalog.Get(item.prefabId);
+          if (definition == null)
+          {
+            Debug.LogWarning("BuildLayoutStore: unknown default layout prefab id '" + item.prefabId + "' - skipped.");
+            continue;
+          }
+
+          int turns = FootprintUtility.NormalizeTurns(Mathf.RoundToInt(item.rotation / 90f));
+          Vector2Int expected = FootprintUtility.RotatedSize(definition.Footprint, turns);
+          if (item.size != null && (item.size.width != expected.x || item.size.depth != expected.y))
+          {
+            Debug.LogWarning(string.Format(
+              "BuildLayoutStore: default layout item '{0}' size {1}x{2} does not match {3} footprint {4}x{5} at rotation {6} - skipped.",
+              item.id, item.size.width, item.size.depth, item.prefabId, expected.x, expected.y, item.rotation));
+            continue;
+          }
+
+          PlacedObject placed = grid.Place(
+            definition,
+            new GridCoord(item.gridOrigin.x, item.gridOrigin.z),
+            turns);
+          if (placed == null)
+          {
+            Debug.LogWarning(string.Format(
+              "BuildLayoutStore: could not place default layout item '{0}' at ({1}, {2}) rotation {3}.",
+              item.id, item.gridOrigin.x, item.gridOrigin.z, item.rotation));
+            continue;
+          }
+
+          applied++;
+        }
+      }
+      finally
+      {
+        _loading = false;
+      }
+
+      if (persist) Save();
+      Debug.Log(string.Format("BuildLayoutStore: applied {0}/{1} default layout items.", applied, layout.items.Count));
+      return applied > 0;
     }
 
     void Quarantine(string json, string reason)

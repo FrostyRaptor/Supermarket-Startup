@@ -15,7 +15,7 @@ MonoBehaviour:
   id: checkout_lane_4x3
   displayName: Checkout Lane 4x3
   category: 0
-  prefab: {fileID: 6034314656484718607, guid: 7f4e55c7d7f834971becb4d9b546d036, type: 3}
+  prefab: {fileID: 7838269859905419148, guid: 8d49dd60065244b908fc5e462da3ed19, type: 3}
   footprint: {x: 4, y: 3}
   pivotOffset: {x: 0, y: 0, z: 0}
   cost: 250

@@ -1,0 +1,104 @@
+newmtl Plastic
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 0.08 0.08 0.08
+Ns 12
+d 1
+map_Kd ../_Textures/Plastic.png
+
+newmtl Metal
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 0.08 0.08 0.08
+Ns 12
+d 1
+map_Kd ../_Textures/Metal.png
+
+newmtl DarkMetal
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 0.08 0.08 0.08
+Ns 12
+d 1
+map_Kd ../_Textures/DarkMetal.png
+
+newmtl White
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 0.08 0.08 0.08
+Ns 12
+d 1
+map_Kd ../_Textures/White.png
+
+newmtl Glass
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 0.08 0.08 0.08
+Ns 12
+d 1
+map_Kd ../_Textures/Glass.png
+
+newmtl Wood
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 0.08 0.08 0.08
+Ns 12
+d 1
+map_Kd ../_Textures/Wood.png
+
+newmtl WoodDark
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 0.08 0.08 0.08
+Ns 12
+d 1
+map_Kd ../_Textures/WoodDark.png
+
+newmtl Red
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 0.08 0.08 0.08
+Ns 12
+d 1
+map_Kd ../_Textures/Red.png
+
+newmtl Green
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 0.08 0.08 0.08
+Ns 12
+d 1
+map_Kd ../_Textures/Green.png
+
+newmtl Yellow
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 0.08 0.08 0.08
+Ns 12
+d 1
+map_Kd ../_Textures/Yellow.png
+
+newmtl Black
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 0.08 0.08 0.08
+Ns 12
+d 1
+map_Kd ../_Textures/Black.png
+
+newmtl Rubber
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 0.08 0.08 0.08
+Ns 12
+d 1
+map_Kd ../_Textures/Rubber.png
+
+newmtl Blue
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 0.08 0.08 0.08
+Ns 12
+d 1
+map_Kd ../_Textures/Blue.png
+

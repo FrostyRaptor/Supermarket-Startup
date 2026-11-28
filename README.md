@@ -56,7 +56,8 @@ The full game state (day, wallet, sections, employees, inventory, deliveries,
 upgrades and license progress) and the placed-object layout are stored with
 `PlayerPrefs` (WebGL-safe; no blocking file I/O). Saves are written on day change,
 hiring/firing, section changes, build changes, and when the tab loses focus.
-See `Assets/__Scripts/Building/README.md` for the layout save format.
+New games start from the shipped `Assets/Resources/DefaultBuildLayout.json`
+layout. See `Assets/__Scripts/Building/README.md` for the layout save format.
 
 ## HUD
 

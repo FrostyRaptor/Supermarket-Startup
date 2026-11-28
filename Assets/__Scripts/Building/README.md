@@ -18,7 +18,8 @@ Runtime grid-based object placement for the supermarket. This is the "objects on
 ## Scene setup
 
 Run `Tools > Supermarket > Build System > Setup Scene`. This creates the materials,
-placeholder prefabs, definitions and catalog, then wires a `BuildSystem` object into
+uses the imported models in `Assets/_Prefabs/Placeables` for definitions
+and the catalog, then wires a `BuildSystem` object into
 `Assets/_Scenes/__Scene_0.unity`. It is safe to rerun; existing assets are left alone.
 
 The grid is fitted to the combined bounds of every `ShopCell_*` floor tile (1 m
@@ -32,7 +33,7 @@ The plot is the whole store floor. `BuildGrid.exclusionZones` holds world-space
 XZ rectangles, populated from `StoreBuildZones.CreateDefaultZones()` by
 scene/final-game setup:
 
-- bakery: columns 0-1, rows 0-1 (blocked)
+- bakery: column 0, rows 0-1 (blocked)
 - butcher: columns 4-5, rows 0-3 (blocked)
 - deli: column 2, rows 3-4 (blocked)
 - storage: columns 4-5 behind the butcher, plus column 3 at the back (blocked)
@@ -113,6 +114,12 @@ pause, focus loss, and quit. `PlayerPrefs` is WebGL-safe and avoids blocking
 `System.IO`. Corrupt payloads are quarantined under a `.corrupt` key and ignored;
 unknown definition IDs are skipped with a warning. Unsupported `version` values
 are rejected and the plot starts empty.
+
+When no saved layout exists (first run or a new game), `BuildLayoutStore` loads
+`Assets/Resources/DefaultBuildLayout.json` and applies it as the starting store.
+`GameManager.ResetAll()` reapplies the same file when a new game is created. The
+default layout uses `prefabId` values and degree rotations; every referenced ID
+must have a definition in `PlaceableCatalog`.
 
 Use `Tools > Supermarket > Build System > Clear Saved Layout` to reset the
 configured store's key. If the store has objects placed, `BuildGrid.size` cannot
